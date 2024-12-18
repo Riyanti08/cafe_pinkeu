@@ -7,13 +7,14 @@ import 'package:cafe_pinkeu/presentation/auth/pages/lupa_kata_sandi.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
 import 'package:cafe_pinkeu/presentation/auth/pages/signup/signup.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
-  // WidgetsFlutterBinding.ensureInitialized();
-
-  // await Firabase.initializeApp();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
+
 
 // const List<String> scopes = <String>[
 //   'email',
@@ -48,6 +49,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   GoogleSignInAccount? _currentUser;
+
   Future<void> _handleSignIn() async {
   try {
     await _googleSignIn.signIn();
@@ -307,7 +309,7 @@ class _LoginState extends State<Login> {
                   ),
                 ],
               ),
-            ),
+            ), 
           ),
         ),
       ),
@@ -363,7 +365,4 @@ class _LoginState extends State<Login> {
       ],
     );
   }
-}
-
-class GoogleSignInAccount {
 }
