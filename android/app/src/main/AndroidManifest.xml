@@ -1,8 +1,16 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="https://schemas.android.com/tools"
+    package="com.example.cafe_pinkeu">
     <application
-        android:label="tiga"
+        android:label="cafe_pinkeu"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- <meta-data
+            android:name="com.google.android.gms.games.APP_ID"
+            android:value="@string/app_id" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" /> -->
         <activity
             android:name=".MainActivity"
             android:exported="true"

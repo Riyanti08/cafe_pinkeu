@@ -6,10 +6,26 @@ import 'package:cafe_pinkeu/presentation/auth/pages/login/login_with_phone.dart'
 import 'package:cafe_pinkeu/presentation/auth/pages/lupa_kata_sandi.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
 import 'package:cafe_pinkeu/presentation/auth/pages/signup/signup.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 void main() {
+  // WidgetsFlutterBinding.ensureInitialized();
+
+  // await Firabase.initializeApp();
   runApp(const MyApp());
 }
+
+// const List<String> scopes = <String>[
+//   'email',
+//   'https://www.googleapis.com/auth/contacts.readonly',
+// ];
+
+GoogleSignIn _googleSignIn = GoogleSignIn(
+  scopes: [
+    'email',
+    'https://www.googleapis.com/auth/contacts.readonly',
+  ],
+);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -31,6 +47,14 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  GoogleSignInAccount? _currentUser;
+  Future<void> _handleSignIn() async {
+  try {
+    await _googleSignIn.signIn();
+  } catch (error) {
+    print(error);
+    }
+  }
   bool isPasswordVisible = false;
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -51,6 +75,17 @@ class _LoginState extends State<Login> {
       return 'Password must include uppercase, lowercase, number, and symbol and be at least 8 characters long';
     }
     return null;
+  }
+
+  @override
+  void iniState(){
+    _googleSignIn.onCurrentUserChanged.listen((event) {
+      setState(() {
+        _currentUser = event as GoogleSignInAccount?;
+      });
+    });
+    _googleSignIn.signInSilently();
+    super.initState();
   }
 
   @override
@@ -328,4 +363,7 @@ class _LoginState extends State<Login> {
       ],
     );
   }
+}
+
+class GoogleSignInAccount {
 }
