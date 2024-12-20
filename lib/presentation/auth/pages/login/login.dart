@@ -47,6 +47,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  // ignore: unused_field
   GoogleSignInAccount? _currentUser;
 
   Future<void> _handleSignIn() async {
@@ -79,11 +80,11 @@ class _LoginState extends State<Login> {
   }
 
   @override
-  void iniState(){
+  void initState(){
     super.initState();
     _googleSignIn.onCurrentUserChanged.listen((event) {
       setState(() {
-        _currentUser = event as GoogleSignInAccount?;
+        _currentUser = event;
       });
     });
     _googleSignIn.signInSilently();
