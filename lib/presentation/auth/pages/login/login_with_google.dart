@@ -94,7 +94,7 @@ class LoginWithGoogle extends StatelessWidget {
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => const home_page(),
+                                builder: (context) => const HomePage(),
                               ),
                             );
                           },
@@ -106,7 +106,7 @@ class LoginWithGoogle extends StatelessWidget {
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => const home_page(),
+                                builder: (context) => const HomePage(),
                               ),
                             );
                           },
@@ -118,7 +118,7 @@ class LoginWithGoogle extends StatelessWidget {
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => const home_page(),
+                                builder: (context) => const HomePage(),
                               ),
                             );
                           },
@@ -130,7 +130,7 @@ class LoginWithGoogle extends StatelessWidget {
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => const home_page(),
+                                builder: (context) => const HomePage(),
                               ),
                             );
                           },
@@ -142,7 +142,7 @@ class LoginWithGoogle extends StatelessWidget {
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => const home_page(),
+                                builder: (context) => const HomePage(),
                               ),
                             );
                           },

@@ -164,7 +164,7 @@ class _LoginWithPhoneState extends State<LoginWithPhone> {
                         validateOtp(otpController.text) == null) {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => home_page(),
+                          builder: (context) => HomePage(),
                         ),
                       );
                     } else {

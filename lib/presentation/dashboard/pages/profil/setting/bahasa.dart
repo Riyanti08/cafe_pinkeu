@@ -71,7 +71,7 @@ class _PilihBahasaPageState extends State<PilihBahasaPage> {
             case 0:
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => home_page()),
+                MaterialPageRoute(builder: (context) => HomePage()),
               );
               break;
             case 1:

@@ -15,7 +15,6 @@ void main() async {
   runApp(const MyApp());
 }
 
-
 // const List<String> scopes = <String>[
 //   'email',
 //   'https://www.googleapis.com/auth/contacts.readonly',
@@ -81,6 +80,7 @@ class _LoginState extends State<Login> {
 
   @override
   void iniState(){
+    super.initState();
     _googleSignIn.onCurrentUserChanged.listen((event) {
       setState(() {
         _currentUser = event as GoogleSignInAccount?;
@@ -215,7 +215,7 @@ class _LoginState extends State<Login> {
                       } else {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => home_page(),
+                            builder: (context) => HomePage(),
                           ),
                         );
                       }

@@ -154,7 +154,7 @@ class _FacebookLoginScreenState extends State<FacebookLoginScreen> {
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => const home_page(),
+                            builder: (context) => const HomePage(),
                           ),
                         );
                       },

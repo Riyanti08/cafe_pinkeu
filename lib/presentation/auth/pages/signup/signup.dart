@@ -120,7 +120,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         if (_formKey.currentState!.validate()) {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => home_page(),
+                              builder: (context) => HomePage(),
                             ),
                           );
                         } else {

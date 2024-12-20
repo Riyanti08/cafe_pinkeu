@@ -89,7 +89,7 @@ class AlamatBaruPage extends StatelessWidget {
             case 0:
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => home_page()),
+                MaterialPageRoute(builder: (context) => HomePage()),
               );
               break;
             case 1:

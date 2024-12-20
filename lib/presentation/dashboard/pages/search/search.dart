@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: home_page(),
+      home: HomePage(),
     );
   }
 }
@@ -158,7 +158,7 @@ class SearchPage extends StatelessWidget {
             case 0: // Home
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => home_page()),
+                MaterialPageRoute(builder: (context) => HomePage()),
               );
               break;
             case 1: // Search

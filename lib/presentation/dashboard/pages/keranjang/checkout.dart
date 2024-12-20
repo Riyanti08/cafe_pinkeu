@@ -196,7 +196,7 @@ class CheckoutPage extends StatelessWidget {
             case 0: // Home
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => home_page()),
+                MaterialPageRoute(builder: (context) => HomePage()),
               );
               break;
             case 1: // Search

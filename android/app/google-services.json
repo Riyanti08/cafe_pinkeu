@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "413158722939",
+    "project_id": "cafe-pink-240d9",
+    "storage_bucket": "cafe-pink-240d9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:413158722939:android:a6a9740a6ec80b9eb741de",
+        "android_client_info": {
+          "package_name": "com.example.cafe_pinkeu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "413158722939-fcjtvctd1ufiu0gbmm474paoaaobd7k5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqSvE7UXrSAtDfo11htso19AHuPG7Ue6M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "413158722939-fcjtvctd1ufiu0gbmm474paoaaobd7k5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
