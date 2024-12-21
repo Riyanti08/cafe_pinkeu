@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+// ignore: unused_import
+import 'package:firebase_core/firebase_core.dart';
+// ignore: unused_import
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cafe_pinkeu/presentation/splash_screen.dart';
 import 'core/core.dart';

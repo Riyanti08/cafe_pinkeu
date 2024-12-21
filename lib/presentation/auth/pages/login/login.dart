@@ -1,3 +1,7 @@
+import 'package:cafe_pinkeu/presentation/auth/controller/app_routes.dart';
+import 'package:cafe_pinkeu/presentation/auth/controller/auth_controller.dart';
+import 'package:cafe_pinkeu/presentation/auth/utils/loading.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cafe_pinkeu/core/assets/assets.gen.dart';
 import 'package:cafe_pinkeu/presentation/auth/pages/login/login_with_fb.dart';
@@ -6,13 +10,34 @@ import 'package:cafe_pinkeu/presentation/auth/pages/login/login_with_phone.dart'
 import 'package:cafe_pinkeu/presentation/auth/pages/lupa_kata_sandi.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
 import 'package:cafe_pinkeu/presentation/auth/pages/signup/signup.dart';
+import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  runApp(MyApp());
+}
+
+abstract class _MyAppState extends StatefulWidget{
+  final authC = Get.put(AuthController(), permanent: true);
+  @override
+  Widget build(BuildContext context){
+    return StreamBuilder<User?>(
+      stream: authC.streamAuthAtatus,
+      builder: (context, snapshot){
+        print(snapshot);
+        if (snapshot.connectionState == ConnectionState.active){
+        return GetMaterialApp(
+          title: 'Cafe Pink',
+          initialRoute: Routes.HomePage,
+          getPages: AppPages.routes,
+        );
+      }
+      return LoadingView();
+    });
+  }
 }
 
 // const List<String> scopes = <String>[
@@ -23,7 +48,7 @@ void main() async {
 GoogleSignIn _googleSignIn = GoogleSignIn(
   scopes: [
     'email',
-    'https://www.googleapis.com/auth/contacts.readonly',
+    // 'https://www.googleapis.com/auth/contacts.readonly',
   ],
 );
 

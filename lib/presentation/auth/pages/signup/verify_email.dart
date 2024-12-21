@@ -62,7 +62,7 @@ class _VerifyState extends State<Verify> with TickerProviderStateMixin {
   Future<void> reload() async {
     try {
       await FirebaseAuth.instance.currentUser!.reload();
-      Get.offAllNamed('/wrapper'); // Ganti dengan rute Anda jika Wrapper adalah halaman utama
+      Get.offAllNamed('wrapper'); // Ganti dengan rute Anda jika Wrapper adalah halaman utama
     } catch (e) {
       Get.snackbar(
         'Error',
