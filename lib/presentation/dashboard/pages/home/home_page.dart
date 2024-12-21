@@ -19,6 +19,7 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        automaticallyImplyLeading: false,
         title: Container(
           height: 40,
           decoration: BoxDecoration(
