@@ -6,6 +6,9 @@ import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 // ignore: unused_import
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
 import 'package:cafe_pinkeu/core/assets/assets.gen.dart';
+import 'package:get/get.dart';
+import '../../controller/cart_controller.dart';
+import '../../controller/product_controller.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,31 +43,12 @@ class search_screen extends StatelessWidget {
   }
 }
 
-class SearchPage extends StatelessWidget {
-  final List<Map<String, String>> items = [
-    {
-      'name': 'Cupcake Choco Rainbow',
-      'image': Assets.images.search1.path,
-    },
-    {
-      'name': 'Choco Mango Twist',
-      'image': Assets.images.search2.path,
-    },
-    {
-      'name': 'Shortcake Strawberry',
-      'image': Assets.images.search3.path,
-    },
-    {
-      'name': 'Latte Coffee',
-      'image': Assets.images.search4.path,
-    },
-    {
-      'name': 'Cupcake Ice Cream',
-      'image': Assets.images.search5.path,
-    },
-  ];
+class SearchPage extends GetView<ProductController> {
+  SearchPage({Key? key}) : super(key: key);
 
-  SearchPage({super.key});
+  final cartController = Get.find<CartController>();
+  final searchController = TextEditingController();
+  final RxString searchQuery = ''.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -73,80 +57,179 @@ class SearchPage extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          icon: const Icon(Icons.arrow_back, color: Color(0xFFCA6D5B)),
+          onPressed: () => Navigator.pop(context),
         ),
-        title: Center(
-          child: Container(
-            width: 73,
-            height: 66,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(Assets.logo.logo_toko.path),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              Assets.logo.logo_toko.path,
+              height: 40,
+            ),
+            SizedBox(width: 8),
+            Text(
+              'Search Products',
+              style: TextStyle(
+                color: Color(0xFFCA6D5B),
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ),
+          ],
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.shopping_cart, color: Colors.black),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CartPage()),
-              );
-            },
+            icon: const Icon(Icons.shopping_cart, color: Color(0xFFCA6D5B)),
+            onPressed: () => Get.to(() => CartPage()),
           ),
         ],
       ),
       body: Column(
         children: [
           // Search Bar
-          Padding(
-            padding: const EdgeInsets.all(24.0),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
             child: TextField(
+              controller: searchController,
+              onChanged: (value) => searchQuery.value = value.toLowerCase(),
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFFDE2E7),
-                prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                hintText: 'Search',
+                prefixIcon: const Icon(Icons.search, color: Color(0xFFCA6D5B)),
+                hintText: 'Search products...',
+                hintStyle: TextStyle(color: Colors.grey[600]),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20),
                   borderSide: BorderSide.none,
                 ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 20),
               ),
             ),
           ),
-          // List of Items
+
+          // Products List
           Expanded(
-            child: ListView.separated(
-              itemCount: items.length,
-              separatorBuilder: (context, index) => const Divider(
-                height: 1,
-                color: Colors.grey,
-              ),
-              itemBuilder: (context, index) {
-                return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 8),
-                  leading: Image.asset(
-                    items[index]['image']!,
-                    width: 131,
-                    height: 196,
-                  ),
-                  title: Text(
-                    items[index]['name']!,
-                    style: const TextStyle(fontSize: 20),
-                  ),
-                  onTap: () {
-                    // Action on item click
-                  },
-                );
-              },
-            ),
+            child: Obx(() {
+              final filteredProducts = controller.products
+                  .where((product) =>
+                      product.name.toLowerCase().contains(searchQuery.value) ||
+                      product.category
+                          .toLowerCase()
+                          .contains(searchQuery.value))
+                  .toList();
+
+              return filteredProducts.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.search_off,
+                              size: 64, color: Colors.grey[400]),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No products found',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: filteredProducts.length,
+                      itemBuilder: (context, index) {
+                        final product = filteredProducts[index];
+                        return Card(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.asset(
+                                    product.image,
+                                    width: 80,
+                                    height: 80,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        product.name,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFFCA6D5B),
+                                        ),
+                                      ),
+                                      Text(
+                                        product.category,
+                                        style: TextStyle(
+                                          color: Colors.grey[600],
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Rp ${product.price.toStringAsFixed(0)}',
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () =>
+                                      cartController.addToCart(product),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFFFCDD2),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 8),
+                                  ),
+                                  child: const Text(
+                                    'Add to Cart',
+                                    style: TextStyle(
+                                      color: Color(0xFFCA6D5B),
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+            }),
           ),
         ],
       ),

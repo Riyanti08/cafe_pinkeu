@@ -1,3 +1,4 @@
+import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/edit_profil.dart';
 import 'package:flutter/material.dart';
 // ignore: unused_import
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/rating.dart';
@@ -7,6 +8,7 @@ import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
+import 'package:cafe_pinkeu/presentation/dashboard/widgets/profile_header.dart';
 
 class RatingPage extends StatelessWidget {
   const RatingPage({super.key});
@@ -39,61 +41,17 @@ class RatingPage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const SizedBox(height: 20),
-              // Avatar dan Info Profil
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundImage: AssetImage('assets/images/avatar.png'),
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          "Eva Riyanti",
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                        Text(
-                          "vaa_chol08@gmail.com",
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                        Text(
-                          "+628123456789",
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                "vaa",
-                style: TextStyle(fontSize: 18, color: Colors.black),
-              ),
-              const Text(
-                "Eva Riyanti",
-                style: TextStyle(fontSize: 18, color: Colors.black),
-              ),
-              const Text(
-                "Makan-makan minum-minum di bit of happiness",
-                style: TextStyle(fontSize: 14, color: Colors.black),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 20),
+              // Replace the profile header section with the new widget
+              ProfileHeader(),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => EditProfilePage()),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFFE4E1),
+                  backgroundColor: const Color(0xFFFDE2E7),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 50,
                     vertical: 10,
@@ -101,7 +59,10 @@ class RatingPage extends StatelessWidget {
                 ),
                 child: const Text(
                   "Edit Profile",
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(
+                    color: Color(0xFFCA6D5B),
+                    fontSize: 20,
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -112,7 +73,8 @@ class RatingPage extends StatelessWidget {
                   _buildTabButton("History", false, () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const ProfilePage()),
+                      MaterialPageRoute(
+                          builder: (context) => const ProfilePage()),
                     );
                   }),
                   _buildTabButton("Rating", true, () {
@@ -132,7 +94,8 @@ class RatingPage extends StatelessWidget {
               const Divider(color: Colors.grey),
               // Rating Items
               buildRatingItem("Shortcake Melon", "assets/images/shortcake.png"),
-              buildRatingItem("Ice Americano", "assets/images/ice_americano.png"),
+              buildRatingItem(
+                  "Ice Americano", "assets/images/ice_americano.png"),
               buildRatingItem("Cupcake Candy", "assets/images/cupcake.png"),
             ],
           ),
@@ -216,7 +179,8 @@ class RatingPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTabButton(String title, bool isSelected, VoidCallback onPressed) {
+  Widget _buildTabButton(
+      String title, bool isSelected, VoidCallback onPressed) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: TextButton(
@@ -239,7 +203,7 @@ class RatingPage extends StatelessWidget {
       subtitle: Row(
         children: List.generate(
           5,
-              (index) => const Icon(Icons.star, color: Colors.amber, size: 18),
+          (index) => const Icon(Icons.star, color: Colors.amber, size: 18),
         ),
       ),
     );

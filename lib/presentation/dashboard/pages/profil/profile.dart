@@ -1,3 +1,4 @@
+import 'package:cafe_pinkeu/core/assets/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/rating.dart';
 // ignore: unused_import
@@ -11,6 +12,12 @@ import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dar
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
+import 'package:get/get.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+// Add this import
+import 'package:cafe_pinkeu/presentation/auth/controller/auth_controller.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cafe_pinkeu/presentation/dashboard/widgets/profile_header.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -27,9 +34,23 @@ class ProfilePage extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        title: Image.asset(
-          'assets/logo/logo_toko.png',
-          height: 40,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              Assets.logo.logo_toko.path,
+              height: 40,
+            ),
+            SizedBox(width: 8),
+            Text(
+              'Profile',
+              style: TextStyle(
+                color: Color(0xFFCA6D5B),
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
         centerTitle: true,
         actions: [
@@ -48,59 +69,8 @@ class ProfilePage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const SizedBox(height: 20),
-              // Avatar dan Info Profil
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundImage: AssetImage('assets/images/avatar.png'),
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          "Eva Riyanti",
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                        Text(
-                          "vaa_chol08@gmail.com",
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                        Text(
-                          "+628123456789",
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                "vaa",
-                style: TextStyle(fontSize: 18, color: Colors.black),
-                textAlign: TextAlign.left,
-              ),
-              const Text(
-                "Eva Riyanti",
-                style: TextStyle(fontSize: 18, color: Colors.black),
-                textAlign: TextAlign.left,
-              ),
-              const Text(
-                "Makan-makan minum-minum di bit of happiness",
-                style: TextStyle(fontSize: 14, color: Colors.black),
-                textAlign: TextAlign.left,
-              ),
-              const SizedBox(height: 20),
+              // Replace the profile header section with the new widget
+              ProfileHeader(),
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -165,9 +135,11 @@ class ProfilePage extends StatelessWidget {
                   itemCount: productList.length,
                   itemBuilder: (context, index) {
                     return _buildProductCard(
-                      title: productList[index]['name'] as String? ?? 'Unknown Product',
+                      title: productList[index]['name'] as String? ??
+                          'Unknown Product',
                       price: productList[index]['price'] as String? ?? 'Rp 0',
-                      image: productList[index]['image'] as String? ?? 'assets/images/default_image.png',
+                      image: productList[index]['image'] as String? ??
+                          'assets/images/default_image.png',
                       quantity: productList[index]['quantity'] as int? ?? 1,
                       onIncrease: () {},
                       onDecrease: () {},
@@ -257,7 +229,8 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildTabButton(String title, bool isSelected, VoidCallback onPressed) {
+  Widget _buildTabButton(
+      String title, bool isSelected, VoidCallback onPressed) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: TextButton(
@@ -272,7 +245,6 @@ class ProfilePage extends StatelessWidget {
       ),
     );
   }
-
 
   Widget _buildProductCard({
     required String title,

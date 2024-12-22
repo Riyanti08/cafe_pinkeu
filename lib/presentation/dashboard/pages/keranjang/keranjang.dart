@@ -7,6 +7,11 @@ import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dar
 import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:get/get_state_manager/src/simple/get_view.dart';
+import '../../controller/cart_controller.dart';
 
 void main() {
   runApp(MyApp());
@@ -26,58 +31,30 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class CartPage extends StatefulWidget {
-  @override
-  _CartPageState createState() => _CartPageState();
-}
-
-class _CartPageState extends State<CartPage> {
-  List<Map<String, dynamic>> cartItems = [
-    {
-      'category': 'Cupcake',
-      'title': 'Cupcake Candy',
-      'price': 25000,
-      'image': Assets.images.cupcake_candy.path,
-      'quantity': 1,
-      'checked': false,
-    },
-    {
-      'category': 'Shortcake',
-      'title': 'Shortcake Melon',
-      'price': 25000,
-      'image': Assets.images.shortcake_melon.path,
-      'quantity': 1,
-      'checked': false,
-    },
-    {
-      'category': 'Shortcake',
-      'title': 'Strawberry Roll Cake',
-      'price': 25000,
-      'image': Assets.images.strawberry_roll_cake.path,
-      'quantity': 1,
-      'checked': false,
-    },
-  ];
-
-  // Calculate total price of selected items
-  double calculateTotalPrice() {
-    return cartItems
-        .where((item) => item['checked'])
-        .fold(0.0, (total, item) => total + (item['price'] * item['quantity']));
-  }
-
+class CartPage extends GetView<CartController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text(
-          'Keranjang Saya',
-          style: TextStyle(
-              color: Color(0xFFCA6D5B),
-              fontWeight: FontWeight.bold
-          ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              Assets.logo.logo_toko.path,
+              height: 40,
+            ),
+            SizedBox(width: 8),
+            Text(
+              'Keranjang Saya',
+              style: TextStyle(
+                color: Color(0xFFCA6D5B),
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
         centerTitle: true,
         leading: IconButton(
@@ -94,98 +71,171 @@ class _CartPageState extends State<CartPage> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: cartItems.length,
-              itemBuilder: (context, index) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Row(
-                        children: [
-                          Checkbox(
-                            value: cartItems[index]['checked'],
-                            onChanged: (value) {
-                              setState(() {
-                                cartItems[index]['checked'] = value ?? false;
-                              });
-                            },
-                          ),
-                          Text(
-                            cartItems[index]['category'],
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold
+      body: Obx(() => Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  padding: EdgeInsets.all(16),
+                  itemCount: controller.cartItems.length,
+                  itemBuilder: (context, index) {
+                    final item = controller.cartItems.entries.elementAt(index);
+                    return Card(
+                      margin: EdgeInsets.only(bottom: 16),
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: Colors.grey.shade200,
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          children: [
+                            // Product Image
+                            Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                image: DecorationImage(
+                                  image: AssetImage(item.key.image),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
+                            SizedBox(width: 16),
+                            // Product Details and Quantity Controls
+                            Expanded(
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  // Product Details
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          item.key.name,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        SizedBox(height: 4),
+                                        Text(
+                                          'Rp ${item.key.price}',
+                                          style: TextStyle(
+                                            color: Color(0xFFCA6D5B),
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  // Quantity Controls
+                                  Container(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8),
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFFFDE2E7),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(Icons.remove),
+                                          onPressed: () => controller
+                                              .removeFromCart(item.key),
+                                          iconSize: 18,
+                                          color: Color(0xFFCA6D5B),
+                                          padding: EdgeInsets.zero,
+                                          constraints: BoxConstraints(
+                                            minWidth: 32,
+                                            minHeight: 32,
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 8),
+                                          child: Text(
+                                            '${item.value}',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Color(0xFFCA6D5B),
+                                            ),
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.add),
+                                          onPressed: () =>
+                                              controller.addToCart(item.key),
+                                          iconSize: 18,
+                                          color: Color(0xFFCA6D5B),
+                                          padding: EdgeInsets.zero,
+                                          constraints: BoxConstraints(
+                                            minWidth: 32,
+                                            minHeight: 32,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    buildCartItem(index),
-                  ],
-                );
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Row(
+                    );
+                  },
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Checkbox(
-                      value: cartItems.every((item) => item['checked']),
-                      onChanged: (value) {
-                        setState(() {
-                          for (var item in cartItems) {
-                            item['checked'] = value ?? false;
-                          }
-                        });
-                      },
-                    ),
-                    Text('Semua'),
-                    Spacer(),
                     Text(
-                      'Total: Rp ${calculateTotalPrice().toStringAsFixed(0)}',
+                      'Total: Rp ${controller.total.toStringAsFixed(0)}',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
                       ),
                     ),
-                    SizedBox(width: 10),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => CheckoutPage()),
-                        );
+                        // Add navigation to checkout page
+                        if (controller.cartItems.isNotEmpty) {
+                          Get.to(() => CheckoutPage());
+                        } else {
+                          Get.snackbar(
+                            'Cart Empty',
+                            'Please add items to cart first',
+                            backgroundColor: Colors.red[100],
+                            colorText: Colors.red[900],
+                            snackPosition: SnackPosition.TOP,
+                          );
+                        }
                       },
+                      child: Text(
+                        'Checkout',
+                        style: TextStyle(color: Colors.white),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFFCA6D5B),
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      ),
-                      child: Text('CheckOut',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
                       ),
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-        ],
-      ),
+              ),
+            ],
+          )),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white, // Box berwarna putih
+        backgroundColor: Colors.white,
         currentIndex: 2,
         onTap: (index) {
           switch (index) {
@@ -262,71 +312,22 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  Widget buildCartItem(int index) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: [
-          Image.asset(
-            cartItems[index]['image'],
-            width: 78,
-            height: 89,
+  void _showDeleteDialog(BuildContext context, dynamic product) {
+    Get.dialog(
+      AlertDialog(
+        title: Text('Hapus Produk'),
+        content: Text(
+            'Apakah Anda yakin ingin menghapus produk ini dari keranjang?'),
+        actions: [
+          TextButton(
+            child: Text('Batal'),
+            onPressed: () => Get.back(),
           ),
-          SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  cartItems[index]['title'],
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14
-                  ),
-                ),
-                Text(
-                    'Rp ${cartItems[index]['price']}',
-                    style: TextStyle(color: Colors.grey)
-                ),
-                Icon(
-                    Icons.star_border,
-                    color: Color(0xFFA85100)
-                ),
-              ],
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              children: [
-                IconButton(
-                  constraints: BoxConstraints(minWidth: 30),
-                  padding: EdgeInsets.zero,
-                  onPressed: () {
-                    setState(() {
-                      if (cartItems[index]['quantity'] > 1) {
-                        cartItems[index]['quantity']--;
-                      }
-                    });
-                  },
-                  icon: Icon(Icons.remove_circle_outline),
-                ),
-                Text(cartItems[index]['quantity'].toString()),
-                IconButton(
-                  constraints: BoxConstraints(minWidth: 30),
-                  padding: EdgeInsets.zero,
-                  onPressed: () {
-                    setState(() {
-                      cartItems[index]['quantity']++;
-                    });
-                  },
-                  icon: Icon(Icons.add_circle_outline),
-                ),
-              ],
-            ),
+          TextButton(
+            child: Text('Hapus', style: TextStyle(color: Colors.red)),
+            onPressed: () {
+              Get.back();
+            },
           ),
         ],
       ),

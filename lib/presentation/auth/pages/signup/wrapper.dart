@@ -16,19 +16,19 @@ class _WrapperState extends State<Wrapper> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder(
-        stream: FirebaseAuth.instance.authStateChanges(), 
-        builder: (context,snapshot){
-          if(snapshot.hasData){
-            print(snapshot.hasData);
-            if (snapshot.data!.emailVerified) {
-              return HomePage();
-            }else{
-              return Verify();
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              print(snapshot.hasData);
+              if (snapshot.data!.emailVerified) {
+                return HomePage();
+              } else {
+                return Verify();
+              }
+            } else {
+              return Login();
             }
-          }else{
-            return Login();
-          }
-        }),
+          }),
     );
   }
 }

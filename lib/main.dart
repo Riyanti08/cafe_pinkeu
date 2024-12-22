@@ -1,13 +1,14 @@
-import 'package:flutter/material.dart';
-// ignore: unused_import
 import 'package:firebase_core/firebase_core.dart';
-// ignore: unused_import
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cafe_pinkeu/presentation/splash_screen.dart';
+import 'presentation/dashboard/bindings/init_bindings.dart';
 import 'core/core.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MainApp());
 }
 
@@ -16,7 +17,8 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
+      initialBinding: InitBindings(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),

@@ -1,3 +1,6 @@
+import 'package:cafe_pinkeu/presentation/auth/controller/auth_controller.dart';
+import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/setting/alamat.dart';
+import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/setting/alamat_baru.dart';
 import 'package:flutter/material.dart';
 import 'package:cafe_pinkeu/core/assets/assets.gen.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
@@ -8,6 +11,10 @@ import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/opsi_pengirim
 import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
+import 'package:get/get.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cafe_pinkeu/models/address_model.dart';
+import '../../controller/cart_controller.dart';
 
 void main() {
   runApp(const CheckoutApp());
@@ -20,13 +27,345 @@ class CheckoutApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const CheckoutPage(),
+      home: CheckoutPage(),
     );
   }
 }
 
-class CheckoutPage extends StatelessWidget {
-  const CheckoutPage({Key? key}) : super(key: key);
+class CheckoutPage extends GetView<CartController> {
+  CheckoutPage({Key? key}) : super(key: key);
+
+  // Ubah tipe data untuk menangani nullable values
+  final Rx<Map<String, dynamic>?> selectedPayment =
+      Rx<Map<String, dynamic>?>(null);
+
+  // Tambah variable untuk menyimpan opsi pengiriman
+  final Rx<Map<String, dynamic>?> selectedDelivery =
+      Rx<Map<String, dynamic>?>(null);
+
+  Widget _buildAddressSection(BuildContext context) {
+    final authC = Get.find<AuthController>();
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(authC.user.value?.uid)
+          .collection('addresses')
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+          final addresses = snapshot.data!.docs;
+
+          // Find default address or use first one
+          QueryDocumentSnapshot? selectedAddress;
+          try {
+            selectedAddress = addresses.firstWhere(
+              (doc) => doc.get('isDefault') == true,
+            );
+          } catch (e) {
+            selectedAddress = addresses.first;
+          }
+
+          return _buildSectionCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Alamat Pengiriman',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Color(0xFFCA6D5B),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => Get.to(() => AlamatSayaPage()),
+                      child: Text(
+                        'Ubah',
+                        style: TextStyle(
+                          color: Color(0xFFCA6D5B),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8),
+                Row(
+                  children: [
+                    Icon(Icons.location_on, color: Color(0xFFCA6D5B)),
+                    SizedBox(width: 8),
+                    Text(
+                      selectedAddress.get('name'),
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 32),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(selectedAddress.get('phone')),
+                      Text(
+                        selectedAddress.get('fullAddress'),
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                      if (selectedAddress.get('details')?.isNotEmpty ?? false)
+                        Text(
+                          selectedAddress.get('details'),
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // Show add address button if no addresses found
+        return _buildSectionCard(
+          child: ListTile(
+            leading: Icon(Icons.add_location, color: Color(0xFFCA6D5B)),
+            title: Text('Tambah Alamat Pengiriman'),
+            onTap: () => Get.to(() => AlamatBaruPage()),
+          ),
+        );
+      },
+    );
+  }
+
+  // Payment Method Section
+  Widget _buildPaymentMethodSection(BuildContext context) {
+    return _buildSectionCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Metode Pembayaran',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Color(0xFFCA6D5B),
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PaymentMethodPage(),
+                    ),
+                  );
+                  if (result != null) {
+                    selectedPayment.value = result;
+                  }
+                },
+                child: Text(
+                  'Pilih',
+                  style: TextStyle(
+                    color: Color(0xFFCA6D5B),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 8),
+          Obx(() {
+            final payment = selectedPayment.value;
+            if (payment != null) {
+              return Row(
+                children: [
+                  Image.asset(
+                    _getPaymentIcon(payment['method']?.toString() ?? ''),
+                    width: 40,
+                    height: 40,
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          payment['method']?.toString() ?? '',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          payment['details']?.toString() ?? '',
+                          style:
+                              TextStyle(color: Colors.grey[600], fontSize: 13),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }
+            return ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.payment, color: Color(0xFFCA6D5B)),
+              title: Text('Pilih metode pembayaran'),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  // Helper method untuk mendapatkan icon metode pembayaran
+  String _getPaymentIcon(String method) {
+    switch (method) {
+      case 'Bank BNI':
+        return Assets.images.bni.path;
+      case 'Bank BCA':
+        return Assets.images.bca.path;
+      case 'Dana':
+        return Assets.images.dana.path;
+      case 'Cash On Delivery':
+        return Assets.images.cod.path;
+      default:
+        return Assets.images.cod.path;
+    }
+  }
+
+  // Delivery Method Section
+  Widget _buildDeliverySection(BuildContext context) {
+    return _buildSectionCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Pengiriman',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Color(0xFFCA6D5B),
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DeliveryOptionPage(),
+                    ),
+                  );
+                  if (result != null) {
+                    selectedDelivery.value = result;
+                  }
+                },
+                child: Text(
+                  'Pilih',
+                  style: TextStyle(
+                    color: Color(0xFFCA6D5B),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 8),
+          Obx(() {
+            final delivery = selectedDelivery.value;
+            if (delivery != null) {
+              return Row(
+                children: [
+                  Icon(Icons.delivery_dining, color: Color(0xFFCA6D5B)),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${delivery['method']}',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          '${delivery['duration']}',
+                          style:
+                              TextStyle(color: Colors.grey[600], fontSize: 13),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    delivery['price'] ?? '',
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                ],
+              );
+            }
+            return ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.delivery_dining, color: Color(0xFFCA6D5B)),
+              title: Text('Pilih metode pengiriman'),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  // Helper untuk mendapatkan harga pengiriman dari string
+  String _getDeliveryPrice() {
+    if (selectedDelivery.value != null) {
+      final priceStr = selectedDelivery.value!['price'] as String;
+      return priceStr.replaceAll(RegExp(r'[^0-9]'), '');
+    }
+    return '0';
+  }
+
+  // Getter untuk menghitung total keseluruhan
+  double get totalWithDelivery {
+    return controller.total +
+        double.parse(_getDeliveryPrice()) +
+        2000; // 2000 adalah biaya layanan
+  }
+
+  // Update Payment Summary section
+  Widget _buildPaymentSummary() {
+    return _buildSectionCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Ringkasan Pembayaran',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: Color(0xFFCA6D5B),
+            ),
+          ),
+          SizedBox(height: 12),
+          _buildPaymentRow(
+              'Subtotal', 'Rp ${controller.total.toStringAsFixed(0)}'),
+          _buildPaymentRow(
+              'Biaya Pengiriman',
+              selectedDelivery.value != null
+                  ? selectedDelivery.value!['price']
+                  : 'Rp 0'),
+          _buildPaymentRow('Biaya Layanan', 'Rp 2.000'),
+          Divider(height: 24),
+          _buildPaymentRow(
+            'Total',
+            'Rp ${totalWithDelivery.toStringAsFixed(0)}',
+            isBold: true,
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,257 +385,214 @@ class CheckoutPage extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              padding: const EdgeInsets.all(16),
-              child: Row(
+      body: Obx(() => SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.location_on, color: Colors.black),
-                  const SizedBox(width: 8),
-                  Expanded(
+                  _buildAddressSection(context),
+
+                  SizedBox(height: 16),
+
+                  // Order Items
+                  _buildSectionCard(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
-                          'Alamat Pengiriman',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          'Pesanan Anda',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Color(0xFFCA6D5B),
+                          ),
                         ),
-                        SizedBox(height: 8),
-                        Text('Eva Riyanti | (+62) 8123456789'),
-                        Text(
-                            'Jl. 2025 menuju kaya raya, RT.7/RW.17, Kota Bogor, Jawa Barat, ID 16100'),
+                        SizedBox(height: 12),
+                        ...controller.cartItems.entries.map((item) => Padding(
+                              padding: const EdgeInsets.only(bottom: 12.0),
+                              child: Row(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.asset(
+                                      item.key.image,
+                                      width: 60,
+                                      height: 60,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          item.key.name,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Rp ${item.key.price}',
+                                          style: TextStyle(
+                                              color: Colors.grey[600]),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Text(
+                                    'x${item.value}',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            )),
                       ],
                     ),
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Cupcake',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  _buildProductItem('Cupcake Candy', 'Rp 25.000',
-                      Assets.images.cupcake_candy.path),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Short Cake',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  _buildProductItem('Shortcake Melon', 'Rp 25.000',
-                      Assets.images.shortcake_melon.path),
-                ],
-              ),
-            ),
 
-            const SizedBox(height: 16),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.delivery_dining, size: 20),
-                      const SizedBox(width: 8),
-                      const Text('Delivery'),
-                      const Spacer(),
-                      const Text('Rp 15.000'),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('Regular'),
-                  ),
+                  SizedBox(height: 16),
+
+                  _buildDeliverySection(context), // Tambahkan section ini
+
+                  SizedBox(height: 16),
+
+                  _buildPaymentMethodSection(context),
+
+                  SizedBox(height: 16),
+                  _buildPaymentSummary(), // Gunakan widget yang sudah diupdate
                 ],
               ),
             ),
-            const SizedBox(height: 16),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              padding: const EdgeInsets.all(16),
+          )),
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              blurRadius: 10,
+              offset: Offset(0, -5),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Rincian Pembayaran',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  Text(
+                    'Total Pembayaran',
+                    style: TextStyle(color: Colors.grey[600]),
                   ),
-                  const SizedBox(height: 8),
-                  _buildPaymentDetail('Harga', 'Rp 50.000'),
-                  _buildPaymentDetail('Biaya Pengiriman', 'Rp 15.000'),
-                  _buildPaymentDetail('Biaya Penanganan', 'Rp 2.000'),
-                  const Divider(),
-                  _buildPaymentDetail('Total', 'Rp 67.000', isBold: true),
+                  Obx(() => Text(
+                        'Rp ${totalWithDelivery.toStringAsFixed(0)}',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFCA6D5B),
+                        ),
+                      )),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const PaymentMethodPage()),
-                );
+            ElevatedButton(
+              onPressed: () {
+                // Handle payment
               },
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFCA6D5B),
+                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Text('Metode Pembayaran',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    Text('Bank BNI'),
-                    Icon(Icons.more_horiz),
-                  ],
+              ),
+              child: Text(
+                'Bayar Sekarang',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        // Box berwarna putih
-        currentIndex: 2,
-        onTap: (index) {
-          switch (index) {
-            case 0: // Home
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => HomePage()),
-              );
-              break;
-            case 1: // Search
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SearchPage()),
-              );
-              break;
-            case 2: // Cart
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CartPage()),
-              );
-              break;
-            case 3: // Notifications
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => NotifikasiPage()),
-              );
-              break;
-            case 4: // Profile
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ProfilePage()),
-              );
-              break;
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home,
-              color: Colors.black,
-            ),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.search,
-              color: Colors.black,
-            ),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.shopping_cart,
-            ),
-            label: 'Keranjang',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.notifications,
-              color: Colors.black, // Ikon Notifications berwarna hitam
-            ),
-            label: 'Notifikasi',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.person,
-              color: Colors.black, // Ikon Profile berwarna hitam
-            ),
-            label: 'Profil',
+    );
+  }
+
+  void processCheckout(Map<String, dynamic> paymentMethod) async {
+    try {
+      // Di sini Anda bisa menambahkan logika untuk:
+      // 1. Menyimpan order ke Firestore
+      // 2. Membuat record pembayaran
+      // 3. Mengosongkan keranjang
+      // 4. Redirect ke halaman sukses
+
+      Get.snackbar(
+        'Sukses',
+        'Pesanan Anda sedang diproses dengan ${paymentMethod['method']}',
+        backgroundColor: Colors.green[100],
+      );
+
+      // Navigate to success page or order status
+      // Get.to(() => OrderSuccessPage());
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal memproses pesanan: $e',
+        backgroundColor: Colors.red[100],
+      );
+    }
+  }
+
+  Widget _buildSectionCard({required Widget child}) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 10,
+            offset: Offset(0, 5),
           ),
         ],
-        selectedItemColor: Color(0xFFCA6D5B), // Warna untuk item yang terpilih
+      ),
+      child: child,
+    );
+  }
+
+  Widget _buildPaymentRow(String label, String value, {bool isBold = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              color: isBold ? Colors.black : Colors.grey[600],
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              color: isBold ? Color(0xFFCA6D5B) : Colors.black,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ],
       ),
     );
   }
-  Widget _buildProductItem(String title, String price, String imagePath) {
-    return Row(
-      children: [
-        Image.asset(imagePath, width: 50, height: 50),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 4),
-              Text(price),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPaymentDetail(String label, String value, {bool isBold = false}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label),
-        Text(
-          value,
-          style: isBold
-              ? const TextStyle(fontWeight: FontWeight.bold)
-              : const TextStyle(),
-        ),
-      ],
-    );
-  }
-
 }

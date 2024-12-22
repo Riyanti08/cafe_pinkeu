@@ -1,3 +1,4 @@
+import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/edit_profil.dart';
 import 'package:flutter/material.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/rating.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
@@ -9,6 +10,7 @@ import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dar
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
+import 'package:cafe_pinkeu/presentation/dashboard/widgets/profile_header.dart';
 
 class FavoritePage extends StatelessWidget {
   const FavoritePage({super.key});
@@ -38,123 +40,91 @@ class FavoritePage extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            // Avatar dan Info Profil
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: CircleAvatar(
-                    radius: 40,
-                    backgroundImage: AssetImage('assets/images/avatar.png'),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Replace the profile header section with the new widget
+              ProfileHeader(),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => EditProfilePage()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFDE2E7),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 50,
+                    vertical: 10,
                   ),
                 ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        "Eva Riyanti",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      Text(
-                        "vaa_chol08@gmail.com",
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
-                      ),
-                      Text(
-                        "+628123456789",
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
-                      ),
-                    ],
+                child: const Text(
+                  "Edit Profile",
+                  style: TextStyle(
+                    color: Color(0xFFCA6D5B),
+                    fontSize: 20,
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              "vaa",
-              style: TextStyle(fontSize: 18, color: Colors.black),
-            ),
-            const Text(
-              "Eva Riyanti",
-              style: TextStyle(fontSize: 18, color: Colors.black),
-            ),
-            const Text(
-              "Makan-makan minum-minum di bit of happines",
-              style: TextStyle(fontSize: 14, color: Colors.grey),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFFE4E1),
-                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
               ),
-              child: const Text(
-                "Edit Profile",
-                style: TextStyle(color: Colors.black),
+              const SizedBox(height: 20),
+              // Tab Bar
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildTabButton("Riwayat", false, () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ProfilePage()),
+                    );
+                  }),
+                  _buildTabButton("Rating", false, () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => RatingPage()),
+                    );
+                  }),
+                  _buildTabButton("Favorit", true, () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => FavoritePage()),
+                    );
+                  }),
+                ],
               ),
-            ),
-            const SizedBox(height: 20),
-            // Tab Bar
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildTabButton("Riwayat", false, () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ProfilePage()),
-                  );
-                }),
-                _buildTabButton("Rating", false, () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => RatingPage()),
-                  );
-                }),
-                _buildTabButton("Favorit", true, () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => FavoritePage()),
-                  );
-                }),
-              ],
-            ),
-            const Divider(color: Colors.grey),
-            const SizedBox(height: 50),
-            // Favorit Kosong
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircleAvatar(
-                  radius: 50,
-                  backgroundColor: const Color(0xFFFFE4E1),
-                  child: const Icon(Icons.star, color: Colors.brown, size: 50),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  "Belum Ada Favorit",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.brown),
-                ),
-                const SizedBox(height: 10),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 30.0),
-                  child: Text(
-                    "Semua yang di favorit kan akan tersimpan disini agar anda lebih mudah untuk melihat dan mencarinya kapanpun",
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
-                    textAlign: TextAlign.center,
+              const Divider(color: Colors.grey),
+              const SizedBox(height: 50),
+              // Favorit Kosong
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundColor: const Color(0xFFFFE4E1),
+                    child:
+                        const Icon(Icons.star, color: Colors.brown, size: 50),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Belum Ada Favorit",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.brown),
+                  ),
+                  const SizedBox(height: 10),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 30.0),
+                    child: Text(
+                      "Semua yang di favorit kan akan tersimpan disini agar anda lebih mudah untuk melihat dan mencarinya kapanpun",
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -235,7 +205,8 @@ class FavoritePage extends StatelessWidget {
     );
   }
 
-  Widget _buildTabButton(String title, bool isSelected, VoidCallback onPressed) {
+  Widget _buildTabButton(
+      String title, bool isSelected, VoidCallback onPressed) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: TextButton(

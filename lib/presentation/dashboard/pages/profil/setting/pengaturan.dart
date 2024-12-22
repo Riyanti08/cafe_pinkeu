@@ -9,12 +9,17 @@ import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
 import 'package:cafe_pinkeu/presentation/auth/pages/login/login.dart';
 import 'package:cafe_pinkeu/presentation/splash_screen.dart';
+import 'package:get/get.dart';
+
+import 'package:cafe_pinkeu/presentation/auth/controller/auth_controller.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authC = Get.find<AuthController>();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -55,7 +60,8 @@ class SettingsPage extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => SecurityAndAccountPage()),
+                MaterialPageRoute(
+                    builder: (context) => SecurityAndAccountPage()),
               );
             },
           ),
@@ -86,12 +92,7 @@ class SettingsPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Login()),
-                    );
-                  },
+                  onPressed: () => authC.logout(),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFFFFAFA),
                   ),
@@ -102,12 +103,7 @@ class SettingsPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SplashScreen()),
-                    );
-                  },
+                  onPressed: () => authC.logout(),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFFFFAFA),
                   ),

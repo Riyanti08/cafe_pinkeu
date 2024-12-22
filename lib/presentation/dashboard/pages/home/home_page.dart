@@ -1,5 +1,8 @@
+import 'package:cafe_pinkeu/models/product_model.dart';
+import 'package:cafe_pinkeu/presentation/admin/pages/product_management.dart';
 import 'package:flutter/material.dart';
-// ignore: unused_import
+import 'package:get/get.dart';
+import 'package:cafe_pinkeu/presentation/auth/controller/auth_controller.dart';
 import 'package:cafe_pinkeu/core/assets/assets.gen.dart';
 import 'package:cafe_pinkeu/presentation/fitur/minuman/coffe.dart';
 import 'package:cafe_pinkeu/presentation/fitur/makanan/cupcake.dart';
@@ -9,9 +12,20 @@ import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
+import '../../widgets/product_card.dart';
+import '../../controller/cart_controller.dart';
+import '../../controller/product_controller.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  HomePage({super.key}); // Remove controller initialization from constructor
+
+  // Get controller instances
+  final authC = Get.find<AuthController>();
+  final cartC = Get.find<CartController>();
+  final productC = Get.find<ProductController>();
+
+  // Add category filter state
+  final RxString selectedCategory = ''.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -20,21 +34,58 @@ class HomePage extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         automaticallyImplyLeading: false,
-        title: Container(
-          height: 40,
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(50),
-          ),
-          child: TextField(
-            decoration: InputDecoration(
-              prefixIcon: const Icon(Icons.search, color: Colors.grey),
-              hintText: 'Cari di aplikasi Bite of Happiness',
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+        leading: Obx(() => GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfilePage()),
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: CircleAvatar(
+                  backgroundImage: authC.user.value?.photoURL != null
+                      ? NetworkImage(authC.user.value!.photoURL!)
+                      : AssetImage('assets/images/avatar.png') as ImageProvider,
+                ),
+              ),
+            )),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              Assets.logo.logo_toko.path,
+              height: 40,
             ),
-          ),
+            SizedBox(width: 8),
+            Text(
+              'Bite of Happiness',
+              style: TextStyle(
+                color: Color(0xFFCA6D5B),
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
+        centerTitle: true,
+        actions: [
+          // Existing admin button
+          Obx(() => authC.user.value != null
+              ? IconButton(
+                  icon: const Icon(Icons.admin_panel_settings),
+                  color: Color(0xFFCA6D5B),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProductManagementPage(),
+                      ),
+                    );
+                  },
+                )
+              : SizedBox()),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -83,7 +134,8 @@ class HomePage extends StatelessWidget {
                             () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => CupcakePage()),
+                                MaterialPageRoute(
+                                    builder: (context) => CupcakePage()),
                               );
                             },
                           ),
@@ -93,7 +145,8 @@ class HomePage extends StatelessWidget {
                             () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => ShortcakeScreen()),
+                                MaterialPageRoute(
+                                    builder: (context) => ShortcakeScreen()),
                               );
                             },
                           ),
@@ -103,7 +156,8 @@ class HomePage extends StatelessWidget {
                             () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => MilkshakeScreen()),
+                                MaterialPageRoute(
+                                    builder: (context) => MilkshakeScreen()),
                               );
                             },
                           ),
@@ -113,22 +167,12 @@ class HomePage extends StatelessWidget {
                             () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => CoffeeScreen()),
+                                MaterialPageRoute(
+                                    builder: (context) => CoffeeScreen()),
                               );
                             },
                           ),
                         ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      width: double.infinity,
-                      height: 121,
-                      decoration: const BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('assets/images/news.png'),
-                          fit: BoxFit.cover,
-                        ),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -143,30 +187,85 @@ class HomePage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    Container(
-                      width: double.infinity,
-                      height: 195,
-                      decoration: const BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('assets/images/alamat.png'),
-                          fit: BoxFit.cover,
-                        ),
+                    const SizedBox(height: 10),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Our Products',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFC67557),
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    Container(
-                      width: double.infinity,
-                      height: 201,
-                      decoration: const BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('assets/images/contact_us.png'),
-                          fit: BoxFit.cover,
+                    PopupMenuButton<String>(
+                      icon: Icon(Icons.filter_list, color: Color(0xFFC67557)),
+                      onSelected: (String category) {
+                        selectedCategory.value =
+                            category == 'All' ? '' : category;
+                      },
+                      itemBuilder: (BuildContext context) => [
+                        PopupMenuItem(
+                          value: 'All',
+                          child: Text('All Products'),
                         ),
-                      ),
+                        PopupMenuItem(
+                          value: 'Cupcake',
+                          child: Text('Cupcakes'),
+                        ),
+                        PopupMenuItem(
+                          value: 'Shortcake',
+                          child: Text('Shortcakes'),
+                        ),
+                        PopupMenuItem(
+                          value: 'Coffee',
+                          child: Text('Coffee'),
+                        ),
+                        PopupMenuItem(
+                          value: 'Milkshake',
+                          child: Text('Milkshakes'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
+              ),
+
+              // Update Products Grid with filter
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Obx(() {
+                  var filteredProducts = selectedCategory.value.isEmpty
+                      ? productC.products
+                      : productC.products
+                          .where((p) => p.category == selectedCategory.value)
+                          .toList();
+
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.75,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                    ),
+                    itemCount: filteredProducts.length,
+                    itemBuilder: (context, index) {
+                      final product = filteredProducts[index];
+                      return ProductCard(
+                        product: product,
+                        onAddToCart: () => cartC.addToCart(product),
+                      );
+                    },
+                  );
+                }),
               ),
             ],
           ),
@@ -246,7 +345,8 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildFeaturedButton(String title, String imagePath, VoidCallback onPressed) {
+  Widget _buildFeaturedButton(
+      String title, String imagePath, VoidCallback onPressed) {
     return Padding(
       padding: const EdgeInsets.only(right: 10.0),
       child: Column(

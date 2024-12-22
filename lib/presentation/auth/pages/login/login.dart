@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cafe_pinkeu/core/assets/assets.gen.dart';
 import 'package:cafe_pinkeu/presentation/auth/pages/login/login_with_fb.dart';
-import 'package:cafe_pinkeu/presentation/auth/pages/login/login_with_google.dart';
+
 import 'package:cafe_pinkeu/presentation/auth/pages/login/login_with_phone.dart';
 import 'package:cafe_pinkeu/presentation/auth/pages/lupa_kata_sandi.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
@@ -20,35 +20,29 @@ void main() async {
   runApp(MyApp());
 }
 
-abstract class _MyAppState extends StatefulWidget{
+abstract class _MyAppState extends StatefulWidget {
   final authC = Get.put(AuthController(), permanent: true);
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return StreamBuilder<User?>(
-      stream: authC.streamAuthAtatus,
-      builder: (context, snapshot){
-        print(snapshot);
-        if (snapshot.connectionState == ConnectionState.active){
-        return GetMaterialApp(
-          title: 'Cafe Pink',
-          initialRoute: Routes.HomePage,
-          getPages: AppPages.routes,
-        );
-      }
-      return LoadingView();
-    });
+        stream: authC.streamAuthStatus,
+        builder: (context, snapshot) {
+          print(snapshot);
+          if (snapshot.connectionState == ConnectionState.active) {
+            return GetMaterialApp(
+              title: 'Cafe Pink',
+              initialRoute: Routes.HomePage,
+              getPages: AppPages.routes,
+            );
+          }
+          return LoadingView();
+        });
   }
 }
-
-// const List<String> scopes = <String>[
-//   'email',
-//   'https://www.googleapis.com/auth/contacts.readonly',
-// ];
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
   scopes: [
     'email',
-    // 'https://www.googleapis.com/auth/contacts.readonly',
   ],
 );
 
@@ -72,16 +66,18 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  // ignore: unused_field
+  late final AuthController authC;
+
   GoogleSignInAccount? _currentUser;
 
   Future<void> _handleSignIn() async {
-  try {
-    await _googleSignIn.signIn();
-  } catch (error) {
-    print(error);
+    try {
+      await _googleSignIn.signIn();
+    } catch (error) {
+      print(error);
     }
   }
+
   bool isPasswordVisible = false;
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -105,15 +101,14 @@ class _LoginState extends State<Login> {
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
+    authC = Get.find<AuthController>();
     _googleSignIn.onCurrentUserChanged.listen((event) {
       setState(() {
         _currentUser = event;
       });
     });
-    _googleSignIn.signInSilently();
-    super.initState();
   }
 
   @override
@@ -172,12 +167,10 @@ class _LoginState extends State<Login> {
                     icon: Icons.email,
                     controller: emailController,
                     onChanged: (value) {
-                      // Validasi email
                       print('Email changed: $value');
                     },
-                    togglePasswordVisibility:
-                        () {}, // Tidak diperlukan untuk email
-                    isPasswordVisible: false, // Tidak diperlukan untuk email
+                    togglePasswordVisibility: () {},
+                    isPasswordVisible: false,
                   ),
                   const SizedBox(height: 16),
                   _buildInputField(
@@ -187,7 +180,6 @@ class _LoginState extends State<Login> {
                     icon: Icons.lock,
                     controller: passwordController,
                     onChanged: (value) {
-                      // Validasi password
                       print('Password changed: $value');
                     },
                     togglePasswordVisibility: () {
@@ -301,25 +293,52 @@ class _LoginState extends State<Login> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => FacebookLoginScreen(),
-                            ),
+                        onPressed: () async {
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) => const Center(
+                                child: CircularProgressIndicator()),
                           );
+
+                          try {
+                            final result = await authC.signInWithGoogle();
+                            Navigator.pop(context); // Close loading dialog
+
+                            if (result != null && result.user != null) {
+                              Get.snackbar(
+                                'Success',
+                                'Welcome ${result.user?.displayName}!',
+                                backgroundColor: Colors.green[100],
+                                colorText: Colors.green[800],
+                                snackPosition: SnackPosition.TOP,
+                                duration: Duration(seconds: 3),
+                              );
+                              Get.offAll(() => HomePage());
+                            } else {
+                              Get.snackbar(
+                                'Error',
+                                'Failed to sign in with Google',
+                                backgroundColor: Colors.red[100],
+                                colorText: Colors.red[800],
+                                snackPosition: SnackPosition.TOP,
+                                duration: Duration(seconds: 3),
+                              );
+                            }
+                          } catch (e) {
+                            Navigator.pop(context);
+                            Get.snackbar(
+                              'Error',
+                              'Sign in failed: $e',
+                              backgroundColor: Colors.red[100],
+                              colorText: Colors.red[800],
+                              snackPosition: SnackPosition.TOP,
+                              duration: Duration(seconds: 3),
+                            );
+                          }
                         },
-                        icon: const Icon(Icons.facebook, color: Colors.blue),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => LoginWithGoogle(),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.alternate_email,
-                            color: Colors.red),
+                        icon: const Icon(Icons.g_mobiledata,
+                            color: Colors.red, size: 40),
                       ),
                       IconButton(
                         onPressed: () {
@@ -335,7 +354,7 @@ class _LoginState extends State<Login> {
                   ),
                 ],
               ),
-            ), 
+            ),
           ),
         ),
       ),

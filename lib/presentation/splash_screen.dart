@@ -1,5 +1,6 @@
+import 'package:cafe_pinkeu/presentation/auth/pages/login/login.dart';
+import 'package:cafe_pinkeu/presentation/auth/utils/loading.dart';
 import 'package:flutter/material.dart';
-import 'package:cafe_pinkeu/presentation/auth/pages/signup_login.dart';
 import '../core/core.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -17,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
       () => Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => SignupLogin(),
+          builder: (context) => Login(),
         ),
       ),
     );

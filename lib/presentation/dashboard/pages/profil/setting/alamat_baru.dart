@@ -4,6 +4,10 @@ import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dar
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
+import 'package:get/get.dart';
+import 'package:cafe_pinkeu/presentation/auth/controller/auth_controller.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cafe_pinkeu/models/address_model.dart';
 
 void main() {
   runApp(MyApp());
@@ -19,7 +23,50 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AlamatBaruPage extends StatelessWidget {
+class AlamatBaruPage extends StatefulWidget {
+  @override
+  _AlamatBaruPageState createState() => _AlamatBaruPageState();
+}
+
+class _AlamatBaruPageState extends State<AlamatBaruPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _addressController = TextEditingController();
+  final _detailsController = TextEditingController();
+  final authC = Get.find<AuthController>();
+
+  Future<void> _saveAddress() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        final userId = authC.user.value!.uid;
+        final addressesRef = FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .collection('addresses');
+
+        // Check if this is the first address (make it default)
+        final addresses = await addressesRef.get();
+        final isFirstAddress = addresses.docs.isEmpty;
+
+        final address = AddressModel(
+          name: _nameController.text,
+          phone: _phoneController.text,
+          fullAddress: _addressController.text,
+          details: _detailsController.text,
+          isDefault: isFirstAddress, // Make first address default
+        );
+
+        await addressesRef.add(address.toMap());
+
+        Get.back();
+        Get.snackbar('Success', 'Address saved successfully');
+      } catch (e) {
+        Get.snackbar('Error', 'Failed to save address: $e');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,47 +85,50 @@ class AlamatBaruPage extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Alamat",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+      body: Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(labelText: "Nama Lengkap"),
+                validator: (value) =>
+                    value!.isEmpty ? "Nama wajib diisi" : null,
               ),
-            ),
-            SizedBox(height: 16),
-            _buildTextField("Nama Lengkap"),
-            SizedBox(height: 16),
-            _buildTextField("Nomor Telepon"),
-            SizedBox(height: 16),
-            _buildTextField("Provinsi, Kota, Kecamatan, Kode Pos"),
-            SizedBox(height: 16),
-            _buildTextField("Nama Jalan, Gedung, No. Rumah"),
-            SizedBox(height: 16),
-            _buildTextField("Detail Lainnya (ex: Blok / Unit No., Patokan)"),
-            Spacer(),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFFFFAFA),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+              TextFormField(
+                controller: _phoneController,
+                decoration: InputDecoration(labelText: "Nomor Telepon"),
+                validator: (value) =>
+                    value!.isEmpty ? "Nomor telepon wajib diisi" : null,
+              ),
+              TextFormField(
+                controller: _addressController,
+                decoration: InputDecoration(labelText: "Alamat Lengkap"),
+                validator: (value) =>
+                    value!.isEmpty ? "Alamat wajib diisi" : null,
+              ),
+              TextFormField(
+                controller: _detailsController,
+                decoration: InputDecoration(labelText: "Detail Lainnya"),
+              ),
+              Spacer(),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _saveAddress,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFFFFAFA),
+                    padding: EdgeInsets.symmetric(vertical: 16),
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: Text(
-                  "Simpan",
-                  style: TextStyle(color: Color(0xFFCA6D5B)),
+                  child: Text("Simpan",
+                      style: TextStyle(color: Color(0xFFCA6D5B))),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -155,15 +205,6 @@ class AlamatBaruPage extends StatelessWidget {
           ),
         ],
         selectedItemColor: Color(0xFFCA6D5B),
-      ),
-    );
-  }
-
-  Widget _buildTextField(String hintText) {
-    return TextField(
-      decoration: InputDecoration(
-        hintText: hintText,
-        border: InputBorder.none,
       ),
     );
   }

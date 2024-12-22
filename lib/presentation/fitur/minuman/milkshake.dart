@@ -212,15 +212,18 @@ class _MilkshakeScreenState extends State<MilkshakeScreen> {
                                         IconButton(
                                           onPressed: () {
                                             setState(() {
-                                              if (milkshake[index]['quantity'] > 1) {
+                                              if (milkshake[index]['quantity'] >
+                                                  1) {
                                                 milkshake[index]['quantity']--;
                                               }
                                             });
                                           },
-                                          icon: const Icon(Icons.remove, color: Colors.black, size: 10),
+                                          icon: const Icon(Icons.remove,
+                                              color: Colors.black, size: 10),
                                         ),
                                         Text(
-                                          milkshake[index]['quantity'].toString(),
+                                          milkshake[index]['quantity']
+                                              .toString(),
                                           style: const TextStyle(fontSize: 10),
                                         ),
                                         IconButton(
@@ -229,7 +232,8 @@ class _MilkshakeScreenState extends State<MilkshakeScreen> {
                                               milkshake[index]['quantity']++;
                                             });
                                           },
-                                          icon: const Icon(Icons.add, color: Colors.black, size: 10),
+                                          icon: const Icon(Icons.add,
+                                              color: Colors.black, size: 10),
                                         ),
                                       ],
                                     ),

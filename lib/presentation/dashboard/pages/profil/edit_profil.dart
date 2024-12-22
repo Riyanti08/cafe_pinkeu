@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:cafe_pinkeu/presentation/auth/controller/auth_controller.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -13,7 +16,76 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-  String selectedGender = "Female"; // Default gender
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController bioController = TextEditingController();
+  String selectedGender = "Female";
+  final authC = Get.find<AuthController>();
+
+  @override
+  void initState() {
+    super.initState();
+    // Load existing data from Firestore
+    loadUserData();
+  }
+
+  Future<void> loadUserData() async {
+    try {
+      final userData = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(authC.user.value?.uid)
+          .get();
+
+      if (userData.exists) {
+        setState(() {
+          usernameController.text = userData.data()?['username'] ?? '';
+          bioController.text = userData.data()?['bio'] ?? '';
+          selectedGender = userData.data()?['gender'] ?? 'Female';
+        });
+      }
+    } catch (e) {
+      print('Error loading user data: $e');
+    }
+  }
+
+  Future<void> _saveChanges() async {
+    try {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      await authC.updateProfile(
+        username: usernameController.text,
+        bio: bioController.text,
+        gender: selectedGender,
+      );
+
+      Navigator.pop(context); // Close loading dialog
+
+      Get.snackbar(
+        'Success',
+        'Profile updated successfully',
+        backgroundColor: Colors.green[100],
+        colorText: Colors.green[800],
+        snackPosition: SnackPosition.TOP,
+        duration: Duration(seconds: 3),
+      );
+
+      // Use Get.off instead of Navigator.pop to refresh the profile page
+      Get.off(() => ProfilePage());
+    } catch (e) {
+      Navigator.pop(context); // Close loading dialog
+      Get.snackbar(
+        'Error',
+        'Failed to update profile: $e',
+        backgroundColor: Colors.red[100],
+        colorText: Colors.red[800],
+        snackPosition: SnackPosition.TOP,
+        duration: Duration(seconds: 3),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,16 +95,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           "Edit Profile",
           style: TextStyle(
             color: Color(0xFFCA6D5B),
             fontWeight: FontWeight.bold,
-              fontSize: 24,
+            fontSize: 24,
           ),
         ),
         centerTitle: true,
@@ -44,34 +114,41 @@ class _EditProfilePageState extends State<EditProfilePage> {
             child: Column(
               children: [
                 const SizedBox(height: 20),
-                // Avatar dan Edit Picture
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundImage: AssetImage('assets/images/avatar.png'),
-                    ),
-                    const SizedBox(width: 20),
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundImage: AssetImage('assets/images/avatar2.png'),
-                    ),
-                  ],
-                ),
+                // Profile Picture Section
+                Obx(() => CircleAvatar(
+                      radius: 50,
+                      backgroundImage: authC.user.value?.photoURL != null
+                          ? NetworkImage(authC.user.value!.photoURL!)
+                          : AssetImage('assets/images/avatar.png')
+                              as ImageProvider,
+                    )),
                 const SizedBox(height: 10),
-                const Text(
-                  "Edit Picture or Avatar",
-                  style: TextStyle(
-                    color: Color(0xFFCA6D5B),
-                    fontSize: 16,
+                TextButton(
+                  onPressed: () {
+                    // Implement photo change logic here
+                  },
+                  child: const Text(
+                    "Change Profile Picture",
+                    style: TextStyle(
+                      color: Color(0xFFCA6D5B),
+                      fontSize: 16,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
                 // Input Fields
-                buildInputField("Name", "vaa"),
-                buildInputField("Username", "Eva Riyanti"),
-                buildInputField("Bio", "Makan-makan minum-minum di bit of happines"),
+                buildInputField(
+                  "Username",
+                  usernameController,
+                  maxLines: 1,
+                  hint: "Enter your username",
+                ),
+                buildInputField(
+                  "Bio",
+                  bioController,
+                  maxLines: 4,
+                  hint: "Write something about yourself",
+                ),
                 const SizedBox(height: 20),
                 // Gender Selection
                 const Align(
@@ -92,6 +169,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     const SizedBox(width: 20),
                     buildGenderOption("Male"),
                   ],
+                ),
+                const SizedBox(height: 40),
+                // Save Button
+                ElevatedButton(
+                  onPressed: _saveChanges,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFCDD2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    minimumSize: Size(double.infinity, 50),
+                  ),
+                  child: const Text(
+                    "Save Changes",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Color(0xFFCA6D5B),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -176,8 +272,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  // Widget untuk Field Input
-  Widget buildInputField(String label, String initialValue) {
+  Widget buildInputField(
+    String label,
+    TextEditingController controller, {
+    int maxLines = 1,
+    String? hint,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -189,13 +289,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
             color: Colors.black,
           ),
         ),
-        const SizedBox(height: 5),
+        const SizedBox(height: 8),
         TextField(
+          controller: controller,
+          maxLines: maxLines,
           decoration: InputDecoration(
-            hintText: initialValue,
-            contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+            hintText: hint ?? "Enter your $label",
+            contentPadding: EdgeInsets.symmetric(
+              vertical: maxLines > 1 ? 16 : 10,
+              horizontal: 16,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Color(0xFFCA6D5B)),
             ),
           ),
         ),
@@ -204,7 +313,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  // Widget untuk Pilihan Gender
   Widget buildGenderOption(String gender) {
     return Row(
       children: [

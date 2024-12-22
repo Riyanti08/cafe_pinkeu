@@ -33,6 +33,13 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
   String selectedPaymentMethod = 'Bank BNI';
   bool isExpanded = false;
 
+  final Map<String, String> paymentDetails = {
+    'Bank BNI': '1234-5678-9012-3456',
+    'Bank BCA': '9876-5432-1098-7654',
+    'Dana': '0812-3456-7890',
+    'Cash On Delivery': 'Bayar di tempat',
+  };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,14 +47,15 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          icon: const Icon(Icons.arrow_back, color: Color(0xFFCA6D5B)),
+          onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Metode Pembayaran',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(
+            color: Color(0xFFCA6D5B),
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
       ),
@@ -58,92 +66,113 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
           children: [
             const Text(
               'Transfer Bank',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFCA6D5B),
+              ),
             ),
             const SizedBox(height: 8),
-            _buildPaymentOption(
-              title: 'Bank BNI',
-              imagePath: Assets.images.bni.path,
-              isSelected: selectedPaymentMethod == 'Bank BNI',
-              onTap: () {
-                setState(() {
-                  selectedPaymentMethod = 'Bank BNI';
-                });
-              },
-            ),
-            _buildPaymentOption(
-              title: 'Bank BCA',
-              imagePath: Assets.images.bca.path,
-              isSelected: selectedPaymentMethod == 'Bank BCA',
-              onTap: () {
-                setState(() {
-                  selectedPaymentMethod = 'Bank BCA';
-                });
-              },
-            ),
-            _buildPaymentOption(
-              title: 'Dana',
-              imagePath: Assets.images.dana.path,
-              isSelected: selectedPaymentMethod == 'Dana',
-              onTap: () {
-                setState(() {
-                  selectedPaymentMethod = 'Dana';
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  isExpanded = !isExpanded;
-                });
-              },
-              child: Row(
-                children: [
-                  const Text(
-                    'Metode Pembayaran Lainnya',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const Spacer(),
-                  Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
-                ],
-              ),
-            ),
-            if (isExpanded)
-              Column(
-                children: [
-                  _buildPaymentOption(
-                    title: 'Cash On Delivery',
-                    imagePath: Assets.images.cod.path,
-                    isSelected: selectedPaymentMethod == 'Cash On Delivery',
-                    onTap: () {
-                      setState(() {
-                        selectedPaymentMethod = 'Cash On Delivery';
-                      });
-                    },
-                  ),
-                ],
-              ),
-            const Spacer(),
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFFDE2E7),
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    _buildPaymentOption(
+                      title: 'Bank BNI',
+                      imagePath: Assets.images.bni.path,
+                      isSelected: selectedPaymentMethod == 'Bank BNI',
+                      onTap: () {
+                        _selectPayment('Bank BNI');
+                      },
+                    ),
+                    _buildPaymentOption(
+                      title: 'Bank BCA',
+                      imagePath: Assets.images.bca.path,
+                      isSelected: selectedPaymentMethod == 'Bank BCA',
+                      onTap: () {
+                        _selectPayment('Bank BCA');
+                      },
+                    ),
+                    _buildPaymentOption(
+                      title: 'Dana',
+                      imagePath: Assets.images.dana.path,
+                      isSelected: selectedPaymentMethod == 'Dana',
+                      onTap: () {
+                        _selectPayment('Dana');
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          isExpanded = !isExpanded;
+                        });
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Metode Pembayaran Lainnya',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFCA6D5B),
+                            ),
+                          ),
+                          Icon(
+                            isExpanded
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
+                            color: Color(0xFFCA6D5B),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (isExpanded) ...[
+                      const SizedBox(height: 8),
+                      _buildPaymentOption(
+                        title: 'Cash On Delivery',
+                        imagePath: Assets.images.cod.path,
+                        isSelected: selectedPaymentMethod == 'Cash On Delivery',
+                        onTap: () {
+                          _selectPayment('Cash On Delivery');
+                        },
+                      ),
+                    ],
+                  ],
                 ),
               ),
-              child: const Text(
-                'Konfirmasi',
-                style: TextStyle(color: Color(0xFFCA6D5B)),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context, <String, dynamic>{
+                    'method': selectedPaymentMethod,
+                    'details': paymentDetails[selectedPaymentMethod],
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFCA6D5B),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  'Pilih Metode Pembayaran',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
           ],
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white, // Box berwarna putih
+        backgroundColor: Colors.white,
         currentIndex: 2,
         onTap: (index) {
           switch (index) {
@@ -217,7 +246,54 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
         ],
         selectedItemColor: Color(0xFFCA6D5B), // Warna untuk item yang terpilih
       ),
+      bottomSheet: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              blurRadius: 4,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: () {
+              // Return hasil pilihan hanya saat tombol diklik
+              Navigator.pop(context, <String, dynamic>{
+                'method': selectedPaymentMethod,
+                'details': paymentDetails[selectedPaymentMethod],
+              });
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFCA6D5B),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text(
+              'Pilih Metode Pembayaran',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
+  }
+
+  void _selectPayment(String method) {
+    setState(() {
+      selectedPaymentMethod = method;
+      // Hapus auto return di sini
+    });
   }
 
   Widget _buildPaymentOption({
@@ -226,38 +302,47 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
     required bool isSelected,
     required VoidCallback onTap,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: isSelected ? Color(0xFFCA6D5B) : Colors.grey.shade300,
-          ),
-          borderRadius: BorderRadius.circular(8),
+    return Card(
+      elevation: isSelected ? 2 : 0,
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(
+          color: isSelected ? Color(0xFFCA6D5B) : Colors.grey.shade300,
+          width: isSelected ? 2 : 1,
         ),
-        child: Row(
-          children: [
-            Image.asset(
-              imagePath,
-              width: 46,
-              height: 36,
-            ),
-            const SizedBox(width: 16),
-            Text(
-              title,
-              style: TextStyle(
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+      ),
+      child: InkWell(
+        onTap: () => _selectPayment(title), // Hanya mengubah selection
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              Image.asset(
+                imagePath,
+                width: 46,
+                height: 36,
+                fit: BoxFit.contain,
               ),
-            ),
-            const Spacer(),
-            if (isSelected)
-              Icon(
-                Icons.check_circle,
-                color: Color(0xFFCA6D5B),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
+                    color: isSelected ? Color(0xFFCA6D5B) : Colors.black87,
+                  ),
+                ),
               ),
-          ],
+              if (isSelected)
+                const Icon(
+                  Icons.check_circle,
+                  color: Color(0xFFCA6D5B),
+                ),
+            ],
+          ),
         ),
       ),
     );

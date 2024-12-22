@@ -26,6 +26,13 @@ class DeliveryOptionPage extends StatefulWidget {
 class _DeliveryOptionPageState extends State<DeliveryOptionPage> {
   String selectedOption = 'Reguler';
 
+  // Tambah detail pengiriman
+  final Map<String, Map<String, String>> deliveryDetails = {
+    'Express': {'duration': '25 Menit', 'price': 'Rp 18.000'},
+    'Reguler': {'duration': '30 - 40 Menit', 'price': 'Rp 15.000'},
+    'Ekonomis': {'duration': '50 - 60 Menit', 'price': 'Rp 8.000'},
+  };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,15 +99,24 @@ class _DeliveryOptionPageState extends State<DeliveryOptionPage> {
             const Spacer(),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.pink.shade100,
+                backgroundColor: Color(0xFFCA6D5B),
                 minimumSize: const Size.fromHeight(50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               onPressed: () {
-                // Handle confirmation logic
+                // Return hasil pilihan delivery
+                Navigator.pop(context, {
+                  'method': selectedOption,
+                  'duration': deliveryDetails[selectedOption]!['duration'],
+                  'price': deliveryDetails[selectedOption]!['price'],
+                });
               },
               child: const Text(
-                'Konfirmasi',
-                style: TextStyle(color: Colors.black),
+                'Pilih Pengiriman',
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -121,7 +137,8 @@ class _DeliveryOptionPageState extends State<DeliveryOptionPage> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          border: Border.all(color: isSelected ? Colors.pink : Colors.grey.shade300),
+          border: Border.all(
+              color: isSelected ? Colors.pink : Colors.grey.shade300),
           borderRadius: BorderRadius.circular(8),
           color: isSelected ? Colors.pink.shade50 : Colors.white,
         ),
