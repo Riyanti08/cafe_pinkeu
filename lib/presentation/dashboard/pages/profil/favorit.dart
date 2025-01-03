@@ -1,134 +1,129 @@
-import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/edit_profil.dart';
 import 'package:flutter/material.dart';
-import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/rating.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
-// ignore: unused_import
-import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/favorit.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dart';
-// ignore: duplicate_import
-import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
-import 'package:cafe_pinkeu/presentation/dashboard/widgets/profile_header.dart';
+import 'package:get/get.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../auth/controller/auth_controller.dart';
+import '../../controller/cart_controller.dart';
 
 class FavoritePage extends StatelessWidget {
-  const FavoritePage({super.key});
+  FavoritePage({super.key});
+
+  final authC = Get.find<AuthController>();
+  final cartC = Get.find<CartController>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Text('My Favorites'),
         backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Image.asset(
-          'assets/logo/logo_toko.png',
-          height: 40,
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings, color: Colors.black),
-            onPressed: () {},
-          ),
-        ],
+        foregroundColor: Color(0xFFCA6D5B),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Replace the profile header section with the new widget
-              ProfileHeader(),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => EditProfilePage()),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFDE2E7),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 50,
-                    vertical: 10,
-                  ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(authC.user.value?.uid)
+            .collection('favorites')
+            .orderBy('addedAt', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text('Something went wrong'));
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return Center(child: Text('No favorites yet'));
+          }
+
+          return GridView.builder(
+            padding: EdgeInsets.all(16),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.75,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+            ),
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              final doc = snapshot.data!.docs[index];
+              final data = doc.data() as Map<String, dynamic>;
+
+              return Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
                 ),
-                child: const Text(
-                  "Edit Profile",
-                  style: TextStyle(
-                    color: Color(0xFFCA6D5B),
-                    fontSize: 20,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              // Tab Bar
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildTabButton("Riwayat", false, () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ProfilePage()),
-                    );
-                  }),
-                  _buildTabButton("Rating", false, () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => RatingPage()),
-                    );
-                  }),
-                  _buildTabButton("Favorit", true, () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => FavoritePage()),
-                    );
-                  }),
-                ],
-              ),
-              const Divider(color: Colors.grey),
-              const SizedBox(height: 50),
-              // Favorit Kosong
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: const Color(0xFFFFE4E1),
-                    child:
-                        const Icon(Icons.star, color: Colors.brown, size: 50),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    "Belum Ada Favorit",
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.brown),
-                  ),
-                  const SizedBox(height: 10),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 30.0),
-                    child: Text(
-                      "Semua yang di favorit kan akan tersimpan disini agar anda lebih mudah untuk melihat dan mencarinya kapanpun",
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
-                      textAlign: TextAlign.center,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(15)),
+                      child: Image.asset(
+                        data['image'],
+                        height: 120,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            data['name'],
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFCA6D5B),
+                            ),
+                          ),
+                          Text(
+                            'Rp ${data['price']}',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                          if (data['rating'] != null)
+                            Row(
+                              children: [
+                                ...List.generate(
+                                  5,
+                                  (index) => Icon(
+                                    index < data['rating']
+                                        ? Icons.star
+                                        : Icons.star_border,
+                                    color: Colors.amber,
+                                    size: 12,
+                                  ),
+                                ),
+                                Text(
+                                  ' ${data['rating'].toStringAsFixed(1)}',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white, // Box berwarna putih
+        backgroundColor: Colors.white,
         currentIndex: 4,
         onTap: (index) {
           switch (index) {
@@ -200,7 +195,7 @@ class FavoritePage extends StatelessWidget {
             label: 'Profil',
           ),
         ],
-        selectedItemColor: Color(0xFFCA6D5B), // Warna untuk item yang terpilih
+        selectedItemColor: Color(0xFFCA6D5B),
       ),
     );
   }

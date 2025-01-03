@@ -2,15 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:cafe_pinkeu/core/assets/assets.gen.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/checkout.dart';
-// ignore: unused_import
-import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-import 'package:get/get_state_manager/src/simple/get_view.dart';
+
 import '../../controller/cart_controller.dart';
 
 void main() {
@@ -18,6 +14,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -32,6 +30,8 @@ class MyApp extends StatelessWidget {
 }
 
 class CartPage extends GetView<CartController> {
+  const CartPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,13 +105,12 @@ class CartPage extends GetView<CartController> {
                               ),
                             ),
                             SizedBox(width: 16),
-                            // Product Details and Quantity Controls
+
                             Expanded(
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  // Product Details
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
@@ -135,7 +134,7 @@ class CartPage extends GetView<CartController> {
                                       ],
                                     ),
                                   ),
-                                  // Quantity Controls
+                                  // tambah kurang
                                   Container(
                                     padding:
                                         EdgeInsets.symmetric(horizontal: 8),
@@ -208,7 +207,6 @@ class CartPage extends GetView<CartController> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        // Add navigation to checkout page
                         if (controller.cartItems.isNotEmpty) {
                           Get.to(() => CheckoutPage());
                         } else {
@@ -221,12 +219,12 @@ class CartPage extends GetView<CartController> {
                           );
                         }
                       },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFCA6D5B),
+                      ),
                       child: Text(
                         'Checkout',
                         style: TextStyle(color: Colors.white),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFCA6D5B),
                       ),
                     ),
                   ],
@@ -302,12 +300,12 @@ class CartPage extends GetView<CartController> {
           BottomNavigationBarItem(
             icon: Icon(
               Icons.person,
-              color: Colors.black, // Ikon Profile berwarna hitam
+              color: Colors.black,
             ),
             label: 'Profil',
           ),
         ],
-        selectedItemColor: Color(0xFFCA6D5B), // Warna untuk item yang terpilih
+        selectedItemColor: Color(0xFFCA6D5B),
       ),
     );
   }

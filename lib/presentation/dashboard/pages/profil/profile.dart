@@ -1,29 +1,30 @@
 import 'package:cafe_pinkeu/core/assets/assets.gen.dart';
+import 'package:cafe_pinkeu/models/product_model.dart';
+import 'package:cafe_pinkeu/presentation/dashboard/controller/cart_controller.dart';
+import 'package:cafe_pinkeu/presentation/dashboard/controller/checkout_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/rating.dart';
-// ignore: unused_import
-import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
-import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/favorit.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/edit_profil.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/setting/pengaturan.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dart';
-// ignore: duplicate_import
-import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
 import 'package:get/get.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-// Add this import
 import 'package:cafe_pinkeu/presentation/auth/controller/auth_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/widgets/profile_header.dart';
+
+import 'package:flutter_slidable/flutter_slidable.dart';
+import '../../widgets/order_history_card.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final selectedTab = ValueNotifier<String>('History');
+    final authC = Get.find<AuthController>();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -69,83 +70,117 @@ class ProfilePage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Replace the profile header section with the new widget
               ProfileHeader(),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => EditProfilePage()),
+
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Bio section
+                    Expanded(
+                      child: StreamBuilder<DocumentSnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(authC.user.value?.uid)
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          final userData =
+                              snapshot.data?.data() as Map<String, dynamic>?;
+                          final bio =
+                              userData?['bio'] as String? ?? 'No bio yet';
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Bio:',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFFCA6D5B),
+                                ),
+                              ),
+                              Text(
+                                bio,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                    // Compact edit profile button
+                    TextButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EditProfilePage()),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.edit,
+                        size: 16,
+                        color: Color(0xFFCA6D5B),
+                      ),
+                      label: Text(
+                        "Edit",
+                        style: TextStyle(
+                          color: Color(0xFFCA6D5B),
+                          fontSize: 14,
+                        ),
+                      ),
+                      style: TextButton.styleFrom(
+                        backgroundColor: Color(0xFFFDE2E7),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Tab Bar
+              ValueListenableBuilder(
+                valueListenable: selectedTab,
+                builder: (context, String currentTab, child) {
+                  return Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildTabButton(
+                            "History",
+                            currentTab == 'History',
+                            () => selectedTab.value = 'History',
+                          ),
+                          _buildTabButton(
+                            "Favorit",
+                            currentTab == 'Favorit',
+                            () => selectedTab.value = 'Favorit',
+                          ),
+                        ],
+                      ),
+                      const Divider(color: Colors.grey),
+                      const SizedBox(height: 10),
+                      // Content based on selected tab
+                      if (currentTab == 'History')
+                        _buildHistorySection()
+                      else
+                        _buildFavoritesSection(),
+                    ],
                   );
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFDE2E7),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 50,
-                    vertical: 10,
-                  ),
-                ),
-                child: const Text(
-                  "Edit Profile",
-                  style: TextStyle(
-                    color: Color(0xFFCA6D5B),
-                    fontSize: 20,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              // Tab Bar
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildTabButton("History", true, () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ProfilePage()),
-                    );
-                  }),
-                  _buildTabButton("Rating", false, () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => RatingPage()),
-                    );
-                  }),
-                  _buildTabButton("Favorit", false, () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => FavoritePage()),
-                    );
-                  }),
-                ],
-              ),
-              const Divider(color: Colors.grey),
-              const SizedBox(height: 20),
-              // Grid Produk
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: GridView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 0.7,
-                  ),
-                  itemCount: productList.length,
-                  itemBuilder: (context, index) {
-                    return _buildProductCard(
-                      title: productList[index]['name'] as String? ??
-                          'Unknown Product',
-                      price: productList[index]['price'] as String? ?? 'Rp 0',
-                      image: productList[index]['image'] as String? ??
-                          'assets/images/default_image.png',
-                      quantity: productList[index]['quantity'] as int? ?? 1,
-                      onIncrease: () {},
-                      onDecrease: () {},
-                    );
-                  },
-                ),
               ),
             ],
           ),
@@ -309,43 +344,529 @@ class ProfilePage extends StatelessWidget {
       ),
     );
   }
-}
 
-const productList = [
-  {
-    'name': 'Shortcake Melon',
-    'price': 'Rp 25.000',
-    'image': 'assets/images/shortcake_melon.png',
-    'quantity': 1,
-  },
-  {
-    'name': 'Ice Americano',
-    'price': 'Rp 25.000',
-    'image': 'assets/images/ice_americano.png',
-    'quantity': 1,
-  },
-  {
-    'name': 'Cupcake Candy',
-    'price': 'Rp 25.000',
-    'image': 'assets/images/cupcake_candy.png',
-    'quantity': 1,
-  },
-  {
-    'name': 'Minty Ice Cream',
-    'price': 'Rp 25.000',
-    'image': 'assets/images/minty_ice_cream.png',
-    'quantity': 1,
-  },
-  {
-    'name': 'Candy Wonderland',
-    'price': 'Rp 25.000',
-    'image': 'assets/images/candy_wonderland.png',
-    'quantity': 1,
-  },
-  {
-    'name': 'Chocolate Strawberry',
-    'price': 'Rp 25.000',
-    'image': 'assets/images/chocolate_strawberry.png',
-    'quantity': 1,
-  },
-];
+  Widget _buildHistorySection() {
+    final authC = Get.find<AuthController>();
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(authC.user.value?.uid)
+          .collection('history')
+          .orderBy('createdAt', descending: true)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.data!.docs.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.history,
+                  size: 80,
+                  color: Colors.grey[300],
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'No Order History',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: snapshot.data!.docs.length,
+          itemBuilder: (context, index) {
+            final doc = snapshot.data!.docs[index];
+            final data = doc.data() as Map<String, dynamic>;
+
+            // Add proper null checks and default values
+            final deliveryMethod =
+                data['deliveryMethod'] as Map<String, dynamic>? ??
+                    {
+                      'method': 'Standard Delivery',
+                      'duration': '30-60 mins',
+                      'price': 'Rp 15.000'
+                    };
+
+            // Ensure proper type casting and default values
+            return OrderHistoryCard(
+              orderId: doc.id,
+              createdAt:
+                  (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+              status: data['status']?.toString() ?? 'pending',
+              items: List.from(data['items'] ?? []),
+              deliveryMethod: Map<String, dynamic>.from(deliveryMethod),
+              total: (data['total'] as num?)?.toDouble() ?? 0.0,
+              rating: (data['rating'] as num?)?.toDouble(),
+              onRetryPayment: data['status'] == 'pending'
+                  ? () => Get.find<CheckoutController>().retryPayment(doc.id)
+                  : null,
+              onRate: _showRatingDialog,
+              onDelete: (String orderId) async {
+                try {
+                  await FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(authC.user.value?.uid)
+                      .collection('history')
+                      .doc(orderId)
+                      .delete();
+
+                  Get.snackbar(
+                    'Success',
+                    'Order history deleted successfully',
+                    backgroundColor: Colors.green[100],
+                    duration: Duration(seconds: 2),
+                  );
+                } catch (e) {
+                  Get.snackbar(
+                    'Error',
+                    'Failed to delete order history',
+                    backgroundColor: Colors.red[100],
+                    duration: Duration(seconds: 2),
+                  );
+                }
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showRatingDialog(
+      BuildContext context, String orderId, List<dynamic> items) {
+    double rating = 0;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Rate Your Order',
+          style: TextStyle(color: Color(0xFFCA6D5B)),
+          textAlign: TextAlign.center,
+        ),
+        content: StatefulBuilder(
+          builder: (context, setState) => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  5,
+                  (index) => IconButton(
+                    icon: Icon(
+                      index < rating ? Icons.star : Icons.star_border,
+                      color: Colors.amber,
+                      size: 30,
+                    ),
+                    onPressed: () {
+                      setState(() => rating = index + 1.0);
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () async {
+              if (rating > 0) {
+                try {
+                  // Start a batch write
+                  final batch = FirebaseFirestore.instance.batch();
+
+                  // Update order rating
+                  final orderRef = FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(Get.find<AuthController>().user.value!.uid)
+                      .collection('history')
+                      .doc(orderId);
+
+                  batch.update(orderRef, {'rating': rating});
+
+                  // Update each product's rating
+                  for (var item in items) {
+                    final productRef = FirebaseFirestore.instance
+                        .collection('products')
+                        .doc(item['id']);
+
+                    // Get current product data
+                    final productDoc = await productRef.get();
+
+                    if (productDoc.exists) {
+                      final data = productDoc.data()!;
+                      final currentRating =
+                          (data['rating'] as num?)?.toDouble() ?? 0.0;
+                      final totalRatings =
+                          (data['totalRatings'] as num?)?.toInt() ?? 0;
+
+                      // Calculate new rating
+                      final newTotalRatings = totalRatings + 1;
+                      final newRating =
+                          ((currentRating * totalRatings) + rating) /
+                              newTotalRatings;
+
+                      // Update product with new rating
+                      batch.update(productRef, {
+                        'rating': double.parse(newRating.toStringAsFixed(1)),
+                        'totalRatings': newTotalRatings,
+                      });
+
+                      // Log rating history
+                      final ratingRef = productRef.collection('ratings').doc();
+                      batch.set(ratingRef, {
+                        'rating': rating,
+                        'userId': Get.find<AuthController>().user.value!.uid,
+                        'orderId': orderId,
+                        'timestamp': FieldValue.serverTimestamp(),
+                      });
+                    }
+                  }
+
+                  // Commit all updates
+                  await batch.commit();
+
+                  Navigator.pop(context);
+                  Get.snackbar(
+                    'Thank You!',
+                    'Your rating has been submitted',
+                    backgroundColor: Colors.green[100],
+                    duration: Duration(seconds: 3),
+                  );
+                } catch (e) {
+                  print('Error submitting rating: $e');
+                  Get.snackbar(
+                    'Error',
+                    'Failed to submit rating',
+                    backgroundColor: Colors.red[100],
+                  );
+                }
+              }
+            },
+            child: Text('Submit', style: TextStyle(color: Color(0xFFCA6D5B))),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Add this method
+  Widget _buildStatusChip(String status) {
+    Color color;
+    Color backgroundColor; // Fix: Initialize the variable
+    IconData icon;
+
+    switch (status) {
+      case 'success':
+        color = Colors.green;
+        backgroundColor = Colors.green.withOpacity(0.1);
+        icon = Icons.check_circle;
+        break;
+      case 'pending':
+        color = Colors.orange;
+        backgroundColor = Colors.orange.withOpacity(0.1);
+        icon = Icons.access_time;
+        break;
+      default:
+        color = Colors.red;
+        backgroundColor = Colors.red.withOpacity(0.1);
+        icon = Icons.error;
+    }
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: color),
+          SizedBox(width: 4),
+          Text(
+            status.toUpperCase(),
+            style: TextStyle(
+              color: color,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildItemTile(Map<String, dynamic> item) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(item['name']),
+      subtitle: Text('${item['quantity']}x @ Rp ${item['price']}'),
+      trailing: Text('Rp ${(item['price'] * item['quantity']).toString()}'),
+    );
+  }
+
+  Widget _buildProductImage(String? imageUrl) {
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      // Debug print untuk memeriksa path gambar
+      print('Loading product image from: $imageUrl');
+
+      try {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.asset(
+            imageUrl,
+            width: 60,
+            height: 60,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              print('Error loading image: $error for path: $imageUrl');
+              // Fallback jika gambar tidak dapat dimuat
+              return Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Icons.fastfood, color: Colors.grey[400], size: 30),
+              );
+            },
+          ),
+        );
+      } catch (e) {
+        print('Exception while loading image: $e');
+        return Container(
+          width: 60,
+          height: 60,
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(Icons.fastfood, color: Colors.grey[400], size: 30),
+        );
+      }
+    }
+
+    // Default placeholder jika imageUrl null atau kosong
+    return Container(
+      width: 60,
+      height: 60,
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(Icons.fastfood, color: Colors.grey[400], size: 30),
+    );
+  }
+
+  Widget _buildPlaceholderImage() {
+    return Container(
+      width: 60,
+      height: 60,
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Icon(Icons.image_not_supported, color: Colors.grey[400]),
+    );
+  }
+
+  Widget _buildFavoritesSection() {
+    final authC = Get.find<AuthController>();
+    final cartC = Get.find<CartController>();
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(authC.user.value?.uid)
+          .collection('favorites')
+          .orderBy('addedAt', descending: true)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.data!.docs.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.favorite_border,
+                  size: 80,
+                  color: Colors.grey[300],
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'No Favorites Yet',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.all(16),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 0.75,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+          ),
+          itemCount: snapshot.data!.docs.length,
+          itemBuilder: (context, index) {
+            final doc = snapshot.data!.docs[index];
+            final data = doc.data() as Map<String, dynamic>;
+
+            return Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(15)),
+                        child: Image.asset(
+                          data['image'] ??
+                              'assets/images/placeholder.png', // Add default image
+                          height: 120,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              height: 120,
+                              width: double.infinity,
+                              color: Colors.grey[200],
+                              child: Icon(Icons.image_not_supported,
+                                  color: Colors.grey),
+                            );
+                          },
+                        ),
+                      ),
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: CircleAvatar(
+                          backgroundColor: Colors.white,
+                          radius: 15,
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.favorite,
+                              size: 15,
+                              color: Colors.red,
+                            ),
+                            onPressed: () async {
+                              await FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(authC.user.value!.uid)
+                                  .collection('favorites')
+                                  .doc(doc.id)
+                                  .delete();
+                            },
+                            padding: EdgeInsets.zero,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                data['name'] ?? 'No name',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFFCA6D5B),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                'Rp ${data['price']?.toString() ?? '0'}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                // Add to cart logic here
+                                cartC.addToCart(Product(
+                                  id: doc.id,
+                                  name: data['name'],
+                                  price: data['price'],
+                                  image: data['image'],
+                                  category: '',
+                                  description: '',
+                                ));
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFFFFCDD2),
+                                padding: EdgeInsets.symmetric(vertical: 8),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              child: Text(
+                                'Add to Cart',
+                                style: TextStyle(
+                                  color: Color(0xFFCA6D5B),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}

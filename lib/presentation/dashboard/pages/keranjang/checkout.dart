@@ -1,27 +1,28 @@
 import 'package:cafe_pinkeu/presentation/auth/controller/auth_controller.dart';
+import 'package:cafe_pinkeu/presentation/dashboard/controller/checkout_controller.dart';
+import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/setting/alamat.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/setting/alamat_baru.dart';
 import 'package:flutter/material.dart';
-import 'package:cafe_pinkeu/core/assets/assets.gen.dart';
-import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
-import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dart';
-import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/metode_pembayaran.dart';
-// ignore: unused_import
 import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/opsi_pengiriman.dart';
-import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
-import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
-import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cafe_pinkeu/models/address_model.dart';
 import '../../controller/cart_controller.dart';
 
 void main() {
-  runApp(const CheckoutApp());
+  runApp(CheckoutApp());
 }
 
 class CheckoutApp extends StatelessWidget {
-  const CheckoutApp({Key? key}) : super(key: key);
+  CheckoutApp({super.key});
+
+  final authC = Get.find<AuthController>();
+
+  // Existing variables
+  final Rx<Map<String, dynamic>?> selectedPayment =
+      Rx<Map<String, dynamic>?>(null);
+  final Rx<Map<String, dynamic>?> selectedDelivery =
+      Rx<Map<String, dynamic>?>(null);
 
   @override
   Widget build(BuildContext context) {
@@ -35,17 +36,23 @@ class CheckoutApp extends StatelessWidget {
 class CheckoutPage extends GetView<CartController> {
   CheckoutPage({Key? key}) : super(key: key);
 
-  // Ubah tipe data untuk menangani nullable values
+  final authC = Get.find<AuthController>();
+
+  final checkoutC = Get.put(CheckoutController());
+
+  // simpan opsi pembayaran yang dipilih
   final Rx<Map<String, dynamic>?> selectedPayment =
       Rx<Map<String, dynamic>?>(null);
 
-  // Tambah variable untuk menyimpan opsi pengiriman
+  // simpan opsi pengiriman yang dipilih
   final Rx<Map<String, dynamic>?> selectedDelivery =
       Rx<Map<String, dynamic>?>(null);
 
-  Widget _buildAddressSection(BuildContext context) {
-    final authC = Get.find<AuthController>();
+  // Add this variable to store selected address
+  final Rx<Map<String, dynamic>?> selectedAddress =
+      Rx<Map<String, dynamic>?>(null);
 
+  Widget _buildAddressSection(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('users')
@@ -53,190 +60,117 @@ class CheckoutPage extends GetView<CartController> {
           .collection('addresses')
           .snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-          final addresses = snapshot.data!.docs;
-
-          // Find default address or use first one
-          QueryDocumentSnapshot? selectedAddress;
-          try {
-            selectedAddress = addresses.firstWhere(
-              (doc) => doc.get('isDefault') == true,
-            );
-          } catch (e) {
-            selectedAddress = addresses.first;
-          }
-
+        if (!snapshot.hasData) {
           return _buildSectionCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Alamat Pengiriman',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Color(0xFFCA6D5B),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => Get.to(() => AlamatSayaPage()),
-                      child: Text(
-                        'Ubah',
-                        style: TextStyle(
-                          color: Color(0xFFCA6D5B),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 8),
-                Row(
-                  children: [
-                    Icon(Icons.location_on, color: Color(0xFFCA6D5B)),
-                    SizedBox(width: 8),
-                    Text(
-                      selectedAddress.get('name'),
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: EdgeInsets.only(left: 32),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(selectedAddress.get('phone')),
-                      Text(
-                        selectedAddress.get('fullAddress'),
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                      if (selectedAddress.get('details')?.isNotEmpty ?? false)
-                        Text(
-                          selectedAddress.get('details'),
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                    ],
-                  ),
-                ),
-              ],
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (snapshot.data!.docs.isEmpty) {
+          return _buildSectionCard(
+            child: TextButton.icon(
+              onPressed: () => Get.to(() => AlamatBaruPage()),
+              icon: Icon(Icons.add_location),
+              label: Text('Add Delivery Address'),
             ),
           );
         }
 
-        // Show add address button if no addresses found
+        if (selectedAddress.value == null) {
+          final addresses = snapshot.data!.docs;
+          try {
+            final defaultAddress = addresses.firstWhere(
+              (doc) =>
+                  (doc.data() as Map<String, dynamic>)['isDefault'] == true,
+            );
+            selectedAddress.value =
+                defaultAddress.data() as Map<String, dynamic>;
+          } catch (e) {
+            selectedAddress.value =
+                addresses.first.data() as Map<String, dynamic>;
+          }
+        }
+
         return _buildSectionCard(
-          child: ListTile(
-            leading: Icon(Icons.add_location, color: Color(0xFFCA6D5B)),
-            title: Text('Tambah Alamat Pengiriman'),
-            onTap: () => Get.to(() => AlamatBaruPage()),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Delivery Address',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Color(0xFFCA6D5B),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      final result = await Get.to(() => AlamatSayaPage());
+                      if (result != null) {
+                        selectedAddress.value = result;
+                      }
+                    },
+                    child: Text(
+                      'Change',
+                      style: TextStyle(color: Color(0xFFCA6D5B)),
+                    ),
+                  ),
+                ],
+              ),
+              Obx(() {
+                final address = selectedAddress.value;
+                if (address != null) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.location_on, color: Color(0xFFCA6D5B)),
+                          SizedBox(width: 8),
+                          Text(
+                            address['name'],
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 32),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(address['phone']),
+                            Text(
+                              address['fullAddress'],
+                              style: TextStyle(color: Colors.grey[600]),
+                            ),
+                            if (address['details']?.isNotEmpty ?? false)
+                              Text(
+                                address['details'],
+                                style: TextStyle(color: Colors.grey[600]),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                }
+                return TextButton.icon(
+                  onPressed: () => Get.to(() => AlamatBaruPage()),
+                  icon: Icon(Icons.add_location),
+                  label: Text('Add Delivery Address'),
+                );
+              }),
+            ],
           ),
         );
       },
     );
   }
 
-  // Payment Method Section
-  Widget _buildPaymentMethodSection(BuildContext context) {
-    return _buildSectionCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Metode Pembayaran',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Color(0xFFCA6D5B),
-                ),
-              ),
-              TextButton(
-                onPressed: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PaymentMethodPage(),
-                    ),
-                  );
-                  if (result != null) {
-                    selectedPayment.value = result;
-                  }
-                },
-                child: Text(
-                  'Pilih',
-                  style: TextStyle(
-                    color: Color(0xFFCA6D5B),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 8),
-          Obx(() {
-            final payment = selectedPayment.value;
-            if (payment != null) {
-              return Row(
-                children: [
-                  Image.asset(
-                    _getPaymentIcon(payment['method']?.toString() ?? ''),
-                    width: 40,
-                    height: 40,
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          payment['method']?.toString() ?? '',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          payment['details']?.toString() ?? '',
-                          style:
-                              TextStyle(color: Colors.grey[600], fontSize: 13),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              );
-            }
-            return ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.payment, color: Color(0xFFCA6D5B)),
-              title: Text('Pilih metode pembayaran'),
-            );
-          }),
-        ],
-      ),
-    );
-  }
-
-  // Helper method untuk mendapatkan icon metode pembayaran
-  String _getPaymentIcon(String method) {
-    switch (method) {
-      case 'Bank BNI':
-        return Assets.images.bni.path;
-      case 'Bank BCA':
-        return Assets.images.bca.path;
-      case 'Dana':
-        return Assets.images.dana.path;
-      case 'Cash On Delivery':
-        return Assets.images.cod.path;
-      default:
-        return Assets.images.cod.path;
-    }
-  }
-
-  // Delivery Method Section
+  // Delivery Method
   Widget _buildDeliverySection(BuildContext context) {
     return _buildSectionCard(
       child: Column(
@@ -330,10 +264,10 @@ class CheckoutPage extends GetView<CartController> {
   double get totalWithDelivery {
     return controller.total +
         double.parse(_getDeliveryPrice()) +
-        2000; // 2000 adalah biaya layanan
+        2000; // Biaya layanan
   }
 
-  // Update Payment Summary section
+  // summary
   Widget _buildPaymentSummary() {
     return _buildSectionCard(
       child: Column(
@@ -420,6 +354,18 @@ class CheckoutPage extends GetView<CartController> {
                                       width: 60,
                                       height: 60,
                                       fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        print(
+                                            'Error loading image: $error for ${item.key.image}');
+                                        return Container(
+                                          width: 60,
+                                          height: 60,
+                                          color: Colors.grey[200],
+                                          child: Icon(Icons.fastfood,
+                                              color: Colors.grey[400]),
+                                        );
+                                      },
                                     ),
                                   ),
                                   SizedBox(width: 12),
@@ -456,14 +402,11 @@ class CheckoutPage extends GetView<CartController> {
 
                   SizedBox(height: 16),
 
-                  _buildDeliverySection(context), // Tambahkan section ini
+                  _buildDeliverySection(context),
 
                   SizedBox(height: 16),
 
-                  _buildPaymentMethodSection(context),
-
-                  SizedBox(height: 16),
-                  _buildPaymentSummary(), // Gunakan widget yang sudah diupdate
+                  _buildPaymentSummary(),
                 ],
               ),
             ),
@@ -503,8 +446,46 @@ class CheckoutPage extends GetView<CartController> {
               ),
             ),
             ElevatedButton(
-              onPressed: () {
-                // Handle payment
+              onPressed: () async {
+                if (selectedAddress.value == null) {
+                  Get.snackbar(
+                    'Error',
+                    'Please select a delivery address',
+                    backgroundColor: Colors.red[100],
+                  );
+                  return;
+                }
+                if (selectedDelivery.value == null) {
+                  Get.snackbar(
+                    'Error',
+                    'Please select a delivery method',
+                    backgroundColor: Colors.red[100],
+                  );
+                  return;
+                }
+
+                // Proses pembayaran
+                try {
+                  await checkoutC.processCheckout(
+                    items: controller.cartItems.entries
+                        .map((item) => {
+                              'id': item.key.id,
+                              'name': item.key.name,
+                              'price': item.key.price,
+                              'quantity': item.value,
+                              'image': item.key.image,
+                            })
+                        .toList(),
+                    total: totalWithDelivery,
+                    deliveryMethod: selectedDelivery.value!,
+                    address: selectedAddress.value!, // Add this parameter
+                  );
+
+                  // Navigate to home immediately
+                  Get.offAll(() => HomePage());
+                } catch (e) {
+                  Get.snackbar('Error', 'Gagal memproses pembayaran');
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFFCA6D5B),
@@ -529,20 +510,11 @@ class CheckoutPage extends GetView<CartController> {
 
   void processCheckout(Map<String, dynamic> paymentMethod) async {
     try {
-      // Di sini Anda bisa menambahkan logika untuk:
-      // 1. Menyimpan order ke Firestore
-      // 2. Membuat record pembayaran
-      // 3. Mengosongkan keranjang
-      // 4. Redirect ke halaman sukses
-
       Get.snackbar(
         'Sukses',
         'Pesanan Anda sedang diproses dengan ${paymentMethod['method']}',
         backgroundColor: Colors.green[100],
       );
-
-      // Navigate to success page or order status
-      // Get.to(() => OrderSuccessPage());
     } catch (e) {
       Get.snackbar(
         'Error',

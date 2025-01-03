@@ -24,7 +24,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     super.initState();
-    // Load existing data from Firestore
+    // Load data dari Firestore
     loadUserData();
   }
 
@@ -61,7 +61,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         gender: selectedGender,
       );
 
-      Navigator.pop(context); // Close loading dialog
+      Navigator.pop(context);
 
       Get.snackbar(
         'Success',
@@ -72,10 +72,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
         duration: Duration(seconds: 3),
       );
 
-      // Use Get.off instead of Navigator.pop to refresh the profile page
       Get.off(() => ProfilePage());
     } catch (e) {
-      Navigator.pop(context); // Close loading dialog
+      Navigator.pop(context);
       Get.snackbar(
         'Error',
         'Failed to update profile: $e',
@@ -114,7 +113,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             child: Column(
               children: [
                 const SizedBox(height: 20),
-                // Profile Picture Section
+
                 Obx(() => CircleAvatar(
                       radius: 50,
                       backgroundImage: authC.user.value?.photoURL != null
@@ -123,20 +122,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               as ImageProvider,
                     )),
                 const SizedBox(height: 10),
-                TextButton(
-                  onPressed: () {
-                    // Implement photo change logic here
-                  },
-                  child: const Text(
-                    "Change Profile Picture",
-                    style: TextStyle(
-                      color: Color(0xFFCA6D5B),
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                // Input Fields
+
+                // Input
                 buildInputField(
                   "Username",
                   usernameController,
@@ -150,7 +137,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   hint: "Write something about yourself",
                 ),
                 const SizedBox(height: 20),
-                // Gender Selection
+                // Pilih gender
                 const Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
@@ -195,7 +182,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white, // Box berwarna putih
+        backgroundColor: Colors.white,
         currentIndex: 4,
         onTap: (index) {
           switch (index) {
@@ -267,7 +254,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             label: 'Profil',
           ),
         ],
-        selectedItemColor: Color(0xFFCA6D5B), // Warna untuk item yang terpilih
+        selectedItemColor: Color(0xFFCA6D5B),
       ),
     );
   }

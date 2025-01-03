@@ -7,8 +7,6 @@ import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dar
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
-import 'package:cafe_pinkeu/presentation/auth/pages/login/login.dart';
-import 'package:cafe_pinkeu/presentation/splash_screen.dart';
 import 'package:get/get.dart';
 
 import 'package:cafe_pinkeu/presentation/auth/controller/auth_controller.dart';
@@ -119,7 +117,7 @@ class SettingsPage extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white, // Box berwarna putih
+        backgroundColor: Colors.white,
         currentIndex: 4,
         onTap: (index) {
           switch (index) {
@@ -191,7 +189,7 @@ class SettingsPage extends StatelessWidget {
             label: 'Profil',
           ),
         ],
-        selectedItemColor: Color(0xFFCA6D5B), // Warna untuk item yang terpilih
+        selectedItemColor: Color(0xFFCA6D5B),
       ),
     );
   }

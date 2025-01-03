@@ -1,5 +1,4 @@
 import 'package:cafe_pinkeu/presentation/auth/pages/login/login.dart';
-import 'package:cafe_pinkeu/presentation/auth/utils/loading.dart';
 import 'package:flutter/material.dart';
 import '../core/core.dart';
 
