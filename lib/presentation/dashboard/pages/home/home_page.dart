@@ -176,18 +176,6 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          _buildImageTile('assets/images/toko5.png'),
-                          _buildImageTile('assets/images/toko6.png'),
-                          _buildImageTile('assets/images/toko7.png'),
-                          _buildImageTile('assets/images/toko8.png'),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 10),
                   ],
                 ),
               ),
@@ -197,7 +185,7 @@ class HomePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Our Products',
+                      'Recommendation Products',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,

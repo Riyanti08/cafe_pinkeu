@@ -1,5 +1,6 @@
 import 'package:cafe_pinkeu/presentation/auth/pages/login/login.dart';
 import 'package:cafe_pinkeu/presentation/auth/utils/loading.dart';
+import 'package:cafe_pinkeu/presentation/onBoarding/pages/onboarding_page.dart';
 import 'package:flutter/material.dart';
 import '../core/core.dart';
 
@@ -18,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
       () => Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => Login(),
+          builder: (context) => OnboardingPage(),
         ),
       ),
     );
