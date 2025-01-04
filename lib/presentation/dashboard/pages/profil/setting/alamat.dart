@@ -201,7 +201,14 @@ class AlamatSayaPage extends StatelessWidget {
         ),
       ),
       child: InkWell(
-        onTap: () => _setDefaultAddress(userId, doc.id),
+        onTap: () {
+          // Return selected address when in checkout context
+          if (Get.previousRoute.contains('checkout')) {
+            Get.back(result: doc.data());
+          } else {
+            _setDefaultAddress(userId, doc.id);
+          }
+        },
         child: Stack(
           children: [
             Padding(

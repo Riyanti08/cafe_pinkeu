@@ -1,4 +1,3 @@
-import 'package:cafe_pinkeu/models/product_model.dart';
 import 'package:cafe_pinkeu/presentation/admin/pages/product_management.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,23 +11,53 @@ import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
+import 'package:cafe_pinkeu/presentation/dashboard/controller/checkout_controller.dart'; // Add this import
 import '../../widgets/product_card.dart';
 import '../../controller/cart_controller.dart';
 import '../../controller/product_controller.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({super.key}); // Remove controller initialization from constructor
+  HomePage({super.key});
 
-  // Get controller instances
+  // dapatkan controller
   final authC = Get.find<AuthController>();
   final cartC = Get.find<CartController>();
   final productC = Get.find<ProductController>();
 
-  // Add category filter state
+  // State management untuk filter kategori produk
   final RxString selectedCategory = ''.obs;
 
   @override
   Widget build(BuildContext context) {
+    //tampilkan snackbar jika ada pesan sukses
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = Get.arguments;
+      if (args != null) {
+        if (args['showSuccessMessage'] == true) {
+          Get.snackbar(
+            'Payment Successful',
+            'Your order #${args['orderId']} has been confirmed',
+            backgroundColor: Colors.green[100],
+            duration: Duration(seconds: 5),
+            snackPosition: SnackPosition.TOP,
+          );
+        } else if (args['showPendingMessage'] == true) {
+          Get.snackbar(
+            'Payment Pending',
+            'Complete your payment for order #${args['orderId']}',
+            backgroundColor: Colors.orange[100],
+            duration: Duration(seconds: 8),
+            mainButton: TextButton(
+              onPressed: () =>
+                  Get.find<CheckoutController>().retryPayment(args['orderId']),
+              child:
+                  Text('Pay Now', style: TextStyle(color: Colors.orange[900])),
+            ),
+          );
+        }
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -70,7 +99,7 @@ class HomePage extends StatelessWidget {
         ),
         centerTitle: true,
         actions: [
-          // Existing admin button
+          // tombol admin
           Obx(() => authC.user.value != null
               ? IconButton(
                   icon: const Icon(Icons.admin_panel_settings),
@@ -224,8 +253,6 @@ class HomePage extends StatelessWidget {
                   ],
                 ),
               ),
-
-              // Update Products Grid with filter
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Obx(() {
@@ -302,33 +329,33 @@ class HomePage extends StatelessWidget {
           BottomNavigationBarItem(
             icon: Icon(
               Icons.search,
-              color: Colors.black, // Ikon Search berwarna hitam
+              color: Colors.black,
             ),
             label: 'Search',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.shopping_cart,
-              color: Colors.black, // Ikon Cart berwarna hitam
+              color: Colors.black,
             ),
             label: 'Keranjang',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.notifications,
-              color: Colors.black, // Ikon Notifications berwarna hitam
+              color: Colors.black,
             ),
             label: 'Notifikasi',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.person,
-              color: Colors.black, // Ikon Profile berwarna hitam
+              color: Colors.black,
             ),
             label: 'Profil',
           ),
         ],
-        selectedItemColor: Color(0xFFCA6D5B), // Warna untuk item yang terpilih
+        selectedItemColor: Color(0xFFCA6D5B),
       ),
     );
   }

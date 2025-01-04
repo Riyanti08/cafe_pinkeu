@@ -34,6 +34,8 @@ class ProductController extends GetxController {
 
   Future<void> addProduct(Product product) async {
     try {
+      // Print the image path for debugging
+      print('Adding product with image path: ${product.image}');
       await _firestore.collection('products').add({
         'name': product.name,
         'price': product.price,

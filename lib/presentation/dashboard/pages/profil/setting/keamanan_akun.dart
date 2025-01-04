@@ -4,8 +4,6 @@ import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dar
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
-// ignore: unused_import
-import 'package:cafe_pinkeu/presentation/auth/pages/login/login.dart';
 import 'package:cafe_pinkeu/presentation/splash_screen.dart';
 
 class SecurityAndAccountPage extends StatelessWidget {
@@ -78,10 +76,9 @@ class SecurityAndAccountPage extends StatelessWidget {
                 "Ganti Password",
                 style: TextStyle(fontSize: 16, color: Colors.black),
               ),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-              onTap: () {
-                // Tambahkan navigasi untuk mengganti password
-              },
+              trailing: const Icon(Icons.arrow_forward_ios,
+                  size: 16, color: Colors.grey),
+              onTap: () {},
             ),
             const Divider(),
             const Spacer(),
@@ -175,7 +172,7 @@ class SecurityAndAccountPage extends StatelessWidget {
             label: 'Profil',
           ),
         ],
-        selectedItemColor: Color(0xFFCA6D5B), // Warna untuk item yang terpilih
+        selectedItemColor: Color(0xFFCA6D5B),
       ),
     );
   }

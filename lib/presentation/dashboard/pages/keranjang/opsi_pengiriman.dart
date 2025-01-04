@@ -26,7 +26,6 @@ class DeliveryOptionPage extends StatefulWidget {
 class _DeliveryOptionPageState extends State<DeliveryOptionPage> {
   String selectedOption = 'Reguler';
 
-  // Tambah detail pengiriman
   final Map<String, Map<String, String>> deliveryDetails = {
     'Express': {'duration': '25 Menit', 'price': 'Rp 18.000'},
     'Reguler': {'duration': '30 - 40 Menit', 'price': 'Rp 15.000'},
