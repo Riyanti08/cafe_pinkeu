@@ -25,31 +25,31 @@ class _CupcakePageState extends State<CupcakePage> {
     {
       'name': 'Cupcake Ice Cream',
       'price': 'Rp 25.000',
-      'image': Assets.images.cupcake_ice_cream.path,
+      'image': Assets.images.cupcakeIceCream.path,
       'quantity': 1,
     },
     {
       'name': 'Cupcake Candy',
       'price': 'Rp 25.000',
-      'image': Assets.images.cupcake_candy.path,
+      'image': Assets.images.cupcakeCandy.path,
       'quantity': 1,
     },
     {
       'name': 'Cupcake Love',
       'price': 'Rp 25.000',
-      'image': Assets.images.cupcake_love.path,
+      'image': Assets.images.cupcakeLove.path,
       'quantity': 1,
     },
     {
       'name': 'Cupcake Unicorn',
       'price': 'Rp 25.000',
-      'image': Assets.images.cupcake_unicorn.path,
+      'image': Assets.images.cupcakeUnicorn.path,
       'quantity': 1,
     },
     {
       'name': 'Cupcake Choco Oreo',
       'price': 'Rp 25.000',
-      'image': Assets.images.cupcake_choco_oreo.path,
+      'image': Assets.images.cupcakeChocoOreo.path,
       'quantity': 1,
     },
   ];

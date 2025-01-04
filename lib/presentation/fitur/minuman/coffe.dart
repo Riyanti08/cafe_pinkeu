@@ -19,37 +19,37 @@ class _CoffeeScreenState extends State<CoffeeScreen> {
     {
       'name': 'Dalgona Coffee',
       'price': 'Rp 25.000',
-      'image': Assets.images.dalgona_coffee.path,
+      'image': Assets.images.dalgonaCoffee.path,
       'quantity': 1,
     },
     {
       'name': 'Ice Americano',
       'price': 'Rp 25.000',
-      'image': Assets.images.ice_americano.path,
+      'image': Assets.images.iceAmericano.path,
       'quantity': 1,
     },
     {
       'name': 'Hot Latte',
       'price': 'Rp 25.000',
-      'image': Assets.images.hot_latte.path,
+      'image': Assets.images.hotLatte.path,
       'quantity': 1,
     },
     {
       'name': 'Orange Espresso',
       'price': 'Rp 25.000',
-      'image': Assets.images.orange_espresso.path,
+      'image': Assets.images.orangeEspresso.path,
       'quantity': 1,
     },
     {
       'name': 'Caramel Macchiato',
       'price': 'Rp 25.000',
-      'image': Assets.images.caramel_macchiato.path,
+      'image': Assets.images.caramelMacchiato.path,
       'quantity': 1,
     },
     {
       'name': 'Espresso Coffee',
       'price': 'Rp 25.000',
-      'image': Assets.images.esspresso_coffee.path,
+      'image': Assets.images.espressoCoffee.path,
       'quantity': 1,
     },
   ];

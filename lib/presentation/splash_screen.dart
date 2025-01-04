@@ -1,3 +1,6 @@
+import 'package:cafe_pinkeu/presentation/auth/pages/login/login.dart';
+import 'package:cafe_pinkeu/presentation/auth/utils/loading.dart';
+import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
 import 'package:cafe_pinkeu/presentation/onBoarding/pages/onboarding_page.dart';
 import 'package:flutter/material.dart';
 import '../core/core.dart';
@@ -17,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
       () => Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => OnboardingPage(),
+          builder: (context) => HomePage(),
         ),
       ),
     );
@@ -32,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
             height: 290,
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage(Assets.logo.logo_toko.path),
+                image: AssetImage(Assets.logo.logoToko.path),
               ),
             ),
           ),

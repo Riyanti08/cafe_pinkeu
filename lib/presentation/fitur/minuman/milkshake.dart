@@ -25,31 +25,31 @@ class _MilkshakeScreenState extends State<MilkshakeScreen> {
     {
       'name': 'Minty Ice Cream',
       'price': 'Rp 25.000',
-      'image': Assets.images.minty_ice_cream.path,
+      'image': Assets.images.mintyIceCream.path,
       'quantity': 1,
     },
     {
       'name': 'Strawberry Oreo',
       'price': 'Rp 25.000',
-      'image': Assets.images.strawberry_oreo.path,
+      'image': Assets.images.strawberryOreo.path,
       'quantity': 1,
     },
     {
       'name': 'Caramel Dream',
       'price': 'Rp 25.000',
-      'image': Assets.images.caramel_dream.path,
+      'image': Assets.images.caramelDream.path,
       'quantity': 1,
     },
     {
       'name': 'Cookies n Cream',
       'price': 'Rp 25.000',
-      'image': Assets.images.cookies_and_cream.path,
+      'image': Assets.images.cookiesAndCream.path,
       'quantity': 1,
     },
     {
       'name': 'Candy Wonderland',
       'price': 'Rp 25.000',
-      'image': Assets.images.candy_wonderland.path,
+      'image': Assets.images.candyWonderland.path,
       'quantity': 1,
     },
   ];

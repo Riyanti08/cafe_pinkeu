@@ -74,7 +74,7 @@ class _LoginWithPhoneState extends State<LoginWithPhone> {
                   height: 147,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage(Assets.logo.logo_toko.path),
+                      image: AssetImage(Assets.logo.logoToko.path),
                     ),
                   ),
                 ),

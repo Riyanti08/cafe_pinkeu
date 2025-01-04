@@ -41,7 +41,6 @@ class ProductManagementPage extends StatelessWidget {
       'category': 'Shortcake',
       'description': 'Sweet melon shortcake'
     },
-    // tambah lg di sini
 
     // Coffee
     {
@@ -57,6 +56,13 @@ class ProductManagementPage extends StatelessWidget {
       'image': 'assets/images/ice_americano.png',
       'category': 'Coffee',
       'description': 'Classic iced americano'
+    },
+    {
+      'name': 'Coffee',
+      'price': 25000,
+      'image': 'assets/images/coffee.png',
+      'category': 'Shortcake',
+      'description': 'Sweet melon shortcake'
     },
     // tambah lg di sini
 

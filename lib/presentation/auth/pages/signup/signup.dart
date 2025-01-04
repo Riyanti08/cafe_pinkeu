@@ -69,7 +69,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           height: 100,
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: AssetImage(Assets.logo.logo_toko.path),
+                              image: AssetImage(Assets.logo.logoToko.path),
                             ),
                           ),
                         ),

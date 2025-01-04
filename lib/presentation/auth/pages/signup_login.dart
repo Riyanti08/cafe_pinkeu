@@ -39,7 +39,7 @@ class SignupLogin extends StatelessWidget {
                     height: 290,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage(Assets.logo.logo_toko.path),
+                        image: AssetImage(Assets.logo.logoToko.path),
                       ),
                     ),
                   ),

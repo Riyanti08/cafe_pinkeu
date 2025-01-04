@@ -62,7 +62,7 @@ class _FacebookLoginScreenState extends State<FacebookLoginScreen> {
                         height: 147,
                         decoration: BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage(Assets.logo.logo_toko.path),
+                            image: AssetImage(Assets.logo.logoToko.path),
                             fit: BoxFit.contain,
                           ),
                         ),

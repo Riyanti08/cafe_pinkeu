@@ -25,31 +25,31 @@ class _ShortcakeScreenState extends State<ShortcakeScreen> {
     {
       'name': 'Shorcake Melon',
       'price': 'Rp 25.000',
-      'image': Assets.images.shortcake_melon.path,
+      'image': Assets.images.shortcakeMelon.path,
       'quantity': 1,
     },
     {
       'name': 'Shortcake Mango',
       'price': 'Rp 25.000',
-      'image': Assets.images.shortcake_mango.path,
+      'image': Assets.images.shortcakeMango.path,
       'quantity': 1,
     },
     {
       'name': 'Chocolate Roll',
       'price': 'Rp 25.000',
-      'image': Assets.images.chocolate_roll.path,
+      'image': Assets.images.chocolateRoll.path,
       'quantity': 1,
     },
     {
       'name': 'Strawberry Roll Cake',
       'price': 'Rp 25.000',
-      'image': Assets.images.strawberry_roll_cake.path,
+      'image': Assets.images.strawberryRollCake.path,
       'quantity': 1,
     },
     {
       'name': 'Chocolate Strawberry',
       'price': 'Rp 25.000',
-      'image': Assets.images.chocolate_strawberry.path,
+      'image': Assets.images.chocolateStrawberry.path,
       'quantity': 1,
     },
   ];

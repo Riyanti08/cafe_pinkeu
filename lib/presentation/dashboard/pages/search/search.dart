@@ -64,7 +64,7 @@ class SearchPage extends GetView<ProductController> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              Assets.logo.logo_toko.path,
+              Assets.logo.logoToko.path,
               height: 40,
             ),
             SizedBox(width: 8),
