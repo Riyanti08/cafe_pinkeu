@@ -36,32 +36,30 @@ class OnboardingContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 Flexible(
-                  child: Container(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                          contents[index].title,
-                          style: TextStyle(
-                            fontSize:
-                                MediaQuery.of(context).textScaler.scale(16),
-                            color: AppColors.textColor,
-                            fontWeight: FontWeight.w900,
-                          ),
-                          textAlign: TextAlign.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        contents[index].title,
+                        style: TextStyle(
+                          fontSize:
+                              MediaQuery.of(context).textScaler.scale(16),
+                          color: AppColors.textColor,
+                          fontWeight: FontWeight.w900,
                         ),
-                        Text(
-                          contents[index].desc,
-                          style: TextStyle(
-                            fontSize:
-                                MediaQuery.of(context).textScaler.scale(14),
-                            color: AppColors.textColor,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.justify,
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        contents[index].desc,
+                        style: TextStyle(
+                          fontSize:
+                              MediaQuery.of(context).textScaler.scale(14),
+                          color: AppColors.textColor,
+                          fontWeight: FontWeight.w500,
                         ),
-                      ],
-                    ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                 )
               ],

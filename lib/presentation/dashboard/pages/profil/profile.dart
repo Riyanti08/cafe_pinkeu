@@ -14,7 +14,6 @@ import 'package:cafe_pinkeu/presentation/auth/controller/auth_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/widgets/profile_header.dart';
 
-import 'package:flutter_slidable/flutter_slidable.dart';
 import '../../widgets/order_history_card.dart';
 
 class ProfilePage extends StatelessWidget {

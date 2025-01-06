@@ -298,6 +298,15 @@ class $AssetsImagesGen {
   /// File path: assets/images/toko8.png
   AssetGenImage get toko8 => const AssetGenImage('assets/images/toko8.png');
 
+  /// File path: assets/images/toko8.png
+  AssetGenImage get ob1 => const AssetGenImage('assets/images/ob1.png');
+
+  /// File path: assets/images/toko8.png
+  AssetGenImage get ob2 => const AssetGenImage('assets/images/ob2.png');
+
+  /// File path: assets/images/toko8.png
+  AssetGenImage get ob3 => const AssetGenImage('assets/images/ob3.png');
+
   /// List of all assets
   List<AssetGenImage> get values => [
         ellipse,

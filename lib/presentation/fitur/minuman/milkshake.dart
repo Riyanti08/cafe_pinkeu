@@ -8,7 +8,7 @@ import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
 
 class MilkshakeScreen extends StatefulWidget {
-  const MilkshakeScreen({Key? key}) : super(key: key);
+  const MilkshakeScreen({super.key});
 
   @override
   _MilkshakeScreenState createState() => _MilkshakeScreenState();

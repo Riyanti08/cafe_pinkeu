@@ -4,9 +4,7 @@ import 'package:cafe_pinkeu/presentation/auth/utils/loading.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cafe_pinkeu/core/assets/assets.gen.dart';
-import 'package:cafe_pinkeu/presentation/auth/pages/login/login_with_fb.dart';
 
-import 'package:cafe_pinkeu/presentation/auth/pages/login/login_with_phone.dart';
 import 'package:cafe_pinkeu/presentation/auth/pages/lupa_kata_sandi.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
 import 'package:cafe_pinkeu/presentation/auth/pages/signup/signup.dart';
@@ -22,7 +20,6 @@ void main() async {
 
 abstract class _MyAppState extends StatefulWidget {
   final authC = Get.put(AuthController(), permanent: true);
-  @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
         stream: authC.streamAuthStatus,
@@ -339,16 +336,6 @@ class _LoginState extends State<Login> {
                         },
                         icon: const Icon(Icons.g_mobiledata,
                             color: Colors.red, size: 40),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => LoginWithPhone(),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.phone, color: Colors.black),
                       ),
                     ],
                   ),

@@ -3,7 +3,6 @@ import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
-// ignore: unused_import
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
 import 'package:cafe_pinkeu/core/assets/assets.gen.dart';
 import 'package:get/get.dart';

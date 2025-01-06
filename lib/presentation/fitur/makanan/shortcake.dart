@@ -8,7 +8,7 @@ import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
 
 class ShortcakeScreen extends StatefulWidget {
-  const ShortcakeScreen({Key? key}) : super(key: key);
+  const ShortcakeScreen({super.key});
 
   @override
   _ShortcakeScreenState createState() => _ShortcakeScreenState();

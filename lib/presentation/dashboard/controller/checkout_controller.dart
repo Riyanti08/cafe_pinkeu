@@ -63,7 +63,7 @@ class CheckoutController extends GetxController {
 
       // Create payment first
       final response = await http.post(
-        Uri.parse('http://192.168.1.3:3000/create-payment'),
+        Uri.parse('http://10.180.85.120:3000/create-payment'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'orderId': orderId,

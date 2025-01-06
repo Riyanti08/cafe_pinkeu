@@ -8,7 +8,7 @@ import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
 
 class CoffeeScreen extends StatefulWidget {
-  const CoffeeScreen({Key? key}) : super(key: key);
+  const CoffeeScreen({super.key});
 
   @override
   _CoffeeScreenState createState() => _CoffeeScreenState();

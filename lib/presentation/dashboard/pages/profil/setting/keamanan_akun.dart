@@ -7,7 +7,7 @@ import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
 import 'package:cafe_pinkeu/presentation/splash_screen.dart';
 
 class SecurityAndAccountPage extends StatelessWidget {
-  const SecurityAndAccountPage({Key? key}) : super(key: key);
+  const SecurityAndAccountPage({super.key});
 
   @override
   Widget build(BuildContext context) {

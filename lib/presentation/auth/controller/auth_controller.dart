@@ -47,7 +47,7 @@ class AuthController extends GetxController {
         return;
       }
       print('Firestore error: ${e.code} - ${e.message}');
-      throw e;
+      rethrow;
     } catch (e) {
       print('Error saving user data: $e');
       return;
@@ -176,7 +176,7 @@ class AuthController extends GetxController {
         snackPosition: SnackPosition.TOP,
         duration: Duration(seconds: 3),
       );
-      throw e;
+      rethrow;
     }
   }
 
@@ -198,7 +198,7 @@ class AuthController extends GetxController {
       user.refresh();
     } catch (e) {
       print('Error updating profile: $e');
-      throw e;
+      rethrow;
     }
   }
 }

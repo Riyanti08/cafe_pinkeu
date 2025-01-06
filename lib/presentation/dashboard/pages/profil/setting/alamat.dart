@@ -11,7 +11,6 @@ import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
 // ignore: unused_import
 import 'package:cafe_pinkeu/presentation/auth/pages/login/login.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 class AlamatSayaPage extends StatelessWidget {
   const AlamatSayaPage({super.key});

@@ -6,7 +6,7 @@ import '../../dashboard/controller/product_controller.dart';
 // Halaman untuk manajemen produk di sisi admin yang terhubung dengan Firestore
 class ProductManagementPage extends StatelessWidget {
   // Inisialisasi controller untuk operasi CRUD produk
-  final ProductController productController = Get.put(ProductController());
+  ProductController get productController => Get.put(ProductController());
 
   // Data produk statis yang akan diupload ke Firestore
   final List<Map<String, dynamic>> allProducts = [
@@ -83,6 +83,8 @@ class ProductManagementPage extends StatelessWidget {
     },
     // tambah lg di sini
   ];
+
+  ProductManagementPage({super.key});
 
   @override
   Widget build(BuildContext context) {

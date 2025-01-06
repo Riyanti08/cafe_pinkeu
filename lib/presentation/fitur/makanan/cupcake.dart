@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cafe_pinkeu/core/assets/assets.gen.dart';
-// ignore: unused_import
 import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
@@ -8,7 +7,7 @@ import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
 
 class CupcakePage extends StatefulWidget {
-  const CupcakePage({Key? key}) : super(key: key);
+  const CupcakePage({super.key});
 
   @override
   _CupcakePageState createState() => _CupcakePageState();
@@ -209,36 +208,10 @@ class _CupcakePageState extends State<CupcakePage> {
                                         width: 1.0,
                                       ),
                                     ),
-                                    child: Row(
-                                      children: [
-                                        IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              if (cupcakes[index]['quantity'] > 1) {
-                                                cupcakes[index]['quantity']--;
-                                              }
-                                            });
-                                          },
-                                          icon: const Icon(Icons.remove, color: Colors.black, size: 10),
-                                        ),
-                                        Text(
-                                          cupcakes[index]['quantity'].toString(),
-                                          style: const TextStyle(fontSize: 10),
-                                        ),
-                                        IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              cupcakes[index]['quantity']++;
-                                            });
-                                          },
-                                          icon: const Icon(Icons.add, color: Colors.black, size: 10),
-                                        ),
-                                      ],
-                                    ),
                                   ),
                                 ],
                               ),
-                  ],
+                    ],
                   ),
                         ),
                   Padding(
@@ -256,11 +229,6 @@ class _CupcakePageState extends State<CupcakePage> {
                               ),
                             ),
                             const SizedBox(width: 4),
-                            const Icon(
-                              Icons.star_border,
-                              size: 20,
-                              color: Color(0xFFA85100),
-                            ),
                           ],
                         ),
                             ],

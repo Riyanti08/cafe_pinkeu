@@ -15,7 +15,7 @@ class OrderHistoryCard extends StatelessWidget {
   final Function(String)? onDelete; // Add this line
 
   const OrderHistoryCard({
-    Key? key,
+    super.key,
     required this.orderId,
     required this.createdAt,
     required this.status,
@@ -26,7 +26,7 @@ class OrderHistoryCard extends StatelessWidget {
     this.rating,
     this.onRate,
     this.onDelete, // Add this line
-  }) : super(key: key);
+  });
 
   Color _getStatusColor(String status) {
     switch (status) {

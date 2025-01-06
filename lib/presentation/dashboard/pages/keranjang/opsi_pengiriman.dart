@@ -5,7 +5,7 @@ void main() {
 }
 
 class DeliveryOptionApp extends StatelessWidget {
-  const DeliveryOptionApp({Key? key}) : super(key: key);
+  const DeliveryOptionApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class DeliveryOptionApp extends StatelessWidget {
 }
 
 class DeliveryOptionPage extends StatefulWidget {
-  const DeliveryOptionPage({Key? key}) : super(key: key);
+  const DeliveryOptionPage({super.key});
 
   @override
   _DeliveryOptionPageState createState() => _DeliveryOptionPageState();

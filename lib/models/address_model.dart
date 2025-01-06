@@ -17,7 +17,7 @@ class AddressModel {
     required this.details,
     this.isDefault = false,
     DateTime? createdAt,
-  }) : this.createdAt = createdAt ?? DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now();
 
   Map<String, dynamic> toMap() => {
         'name': name,

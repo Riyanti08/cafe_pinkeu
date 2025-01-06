@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:cafe_pinkeu/presentation/auth/controller/auth_controller.dart';
 
 class ProfileHeader extends StatelessWidget {
-  ProfileHeader({Key? key}) : super(key: key);
+  ProfileHeader({super.key});
 
   final authC = Get.find<AuthController>();
 

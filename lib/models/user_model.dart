@@ -25,9 +25,9 @@ class UserModel {
     List<String>? favorites,
     DateTime? createdAt,
     DateTime? lastLogin,
-  })  : this.favorites = favorites ?? [],
-        this.createdAt = createdAt ?? DateTime.now(),
-        this.lastLogin = lastLogin ?? DateTime.now();
+  })  : favorites = favorites ?? [],
+        createdAt = createdAt ?? DateTime.now(),
+        lastLogin = lastLogin ?? DateTime.now();
 
   Map<String, dynamic> toMap() {
     return {
