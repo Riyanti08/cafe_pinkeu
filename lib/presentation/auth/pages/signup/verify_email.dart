@@ -5,8 +5,9 @@ import 'package:cafe_pinkeu/presentation/auth/pages/login/login.dart';
 import 'package:cafe_pinkeu/presentation/auth/pages/signup/signup.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  WidgetsFlutterBinding
+      .ensureInitialized(); //Memastikan semua widget sudah diinisialisasi sebelum memulai proses asinkron
+  await Firebase.initializeApp(); //Inisialisasi Firebase
   runApp(MyApp());
 }
 
@@ -62,7 +63,8 @@ class _VerifyState extends State<Verify> with TickerProviderStateMixin {
   Future<void> reload() async {
     try {
       await FirebaseAuth.instance.currentUser!.reload();
-      Get.offAllNamed('wrapper'); // Ganti dengan rute Anda jika Wrapper adalah halaman utama
+      Get.offAllNamed(
+          'wrapper'); // Ganti dengan rute Anda jika Wrapper adalah halaman utama
     } catch (e) {
       Get.snackbar(
         'Error',

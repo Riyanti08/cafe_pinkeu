@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// ignore: unused_import
 import 'package:cafe_pinkeu/core/assets/assets.gen.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dart';
@@ -175,7 +174,8 @@ class InfoPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTabButton(String text, {required bool isSelected, required BuildContext context}) {
+  Widget _buildTabButton(String text,
+      {required bool isSelected, required BuildContext context}) {
     return ElevatedButton(
       onPressed: () {
         if (text == "Semua") {

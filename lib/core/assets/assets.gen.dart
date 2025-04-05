@@ -33,6 +33,9 @@ class $AssetsIconsGen {
   AssetGenImage get logoToko =>
       const AssetGenImage('assets/icons/logo_toko.jpg');
 
+  /// File path: assets/icons/logo_toko.jpg
+  AssetGenImage get kue => const AssetGenImage('assets/icons/kue.jpg');
+
   /// File path: assets/icons/minus.png
   AssetGenImage get minus => const AssetGenImage('assets/icons/minus.png');
 
@@ -371,7 +374,10 @@ class $AssetsImagesGen {
         toko5,
         toko6,
         toko7,
-        toko8
+        toko8,
+        ob1,
+        ob2,
+        ob3
       ];
 }
 

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cafe_pinkeu/core/assets/assets.gen.dart';
-// ignore: unused_import
 import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dart';
-import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
 
@@ -207,36 +205,6 @@ class _MilkshakeScreenState extends State<MilkshakeScreen> {
                                         width: 1.0,
                                       ),
                                     ),
-                                    child: Row(
-                                      children: [
-                                        IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              if (milkshake[index]['quantity'] >
-                                                  1) {
-                                                milkshake[index]['quantity']--;
-                                              }
-                                            });
-                                          },
-                                          icon: const Icon(Icons.remove,
-                                              color: Colors.black, size: 10),
-                                        ),
-                                        Text(
-                                          milkshake[index]['quantity']
-                                              .toString(),
-                                          style: const TextStyle(fontSize: 10),
-                                        ),
-                                        IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              milkshake[index]['quantity']++;
-                                            });
-                                          },
-                                          icon: const Icon(Icons.add,
-                                              color: Colors.black, size: 10),
-                                        ),
-                                      ],
-                                    ),
                                   ),
                                 ],
                               ),
@@ -296,13 +264,7 @@ class _MilkshakeScreenState extends State<MilkshakeScreen> {
                 MaterialPageRoute(builder: (context) => CartPage()),
               );
               break;
-            case 3: // Notifications
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => NotifikasiPage()),
-              );
-              break;
-            case 4: // Profile
+            case 3: //profile
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ProfilePage()),
@@ -330,13 +292,6 @@ class _MilkshakeScreenState extends State<MilkshakeScreen> {
               color: Colors.black, // Ikon Cart berwarna hitam
             ),
             label: 'Keranjang',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.notifications,
-              color: Colors.black, // Ikon Notifications berwarna hitam
-            ),
-            label: 'Notifikasi',
           ),
           BottomNavigationBarItem(
             icon: Icon(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
-import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
 import 'package:cafe_pinkeu/presentation/splash_screen.dart';
 
@@ -122,13 +121,7 @@ class SecurityAndAccountPage extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => CartPage()),
               );
               break;
-            case 3: // Notifications
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => NotifikasiPage()),
-              );
-              break;
-            case 4: // Profile
+            case 3: // Profile
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ProfilePage()),
@@ -157,13 +150,6 @@ class SecurityAndAccountPage extends StatelessWidget {
               color: Colors.black,
             ),
             label: 'Keranjang',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.notifications,
-              color: Colors.black,
-            ),
-            label: 'Notifikasi',
           ),
           BottomNavigationBarItem(
             icon: Icon(

@@ -29,33 +29,32 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
 
-  carousel_slider: ^5.0.0
-  cloud_firestore: ^5.6.0
+  carousel_slider: ^5.0.0 #membuat slider gambar
+  cloud_firestore: ^5.6.0 #penyimpanan database 
   cupertino_icons: ^1.0.8
-  firebase_auth: ^5.3.4
-  firebase_core: ^3.8.1
+  firebase_auth: ^5.3.4 #autentikasi pengguna pake Firebase
+  firebase_core: ^3.8.1 #menginisialisasi dan mengonfigurasi koneksi ke Firebase
   flutter:
     sdk: flutter
-  flutter_facebook_auth: ^7.1.1 # Facebook Authentication
-
-  flutter_slidable: ^3.0.1
-  flutter_svg: ^2.0.16
+  flutter_map: ^7.0.2
+  flutter_slidable: ^3.0.1 #untuk slide yg digeser
+  flutter_svg: ^2.0.16  #gambar vektor berkualitas tinggi
   get: ^4.6.5
-  google_fonts: ^6.2.1
+  google_fonts: ^6.2.1 #google font
   google_nav_bar: ^5.0.7
 
   # Auth providers
   google_sign_in: ^6.2.2 # Google Sign-In
   http: ^1.2.2
-  intl: ^0.17.0
+  intl: ^0.17.0 #inputan tanggal kek timestamp
   uri: ^1.0.0
-  url_launcher: ^6.2.4
+  url_launcher: ^6.2.4 #ini tuh fungsing buat membuka  lngsng urlnya
 
 dev_dependencies:
-  build_runner: ^2.4.13
-  flutter_gen_runner: ^5.8.0
-  flutter_launcher_icons: ^0.14.2
-  flutter_test:
+  build_runner: ^2.4.13 #kode otomatis 
+  flutter_gen_runner: ^5.8.0 #file aset gambar, font
+  flutter_launcher_icons: ^0.14.2 #mengonfigurasi ikon apk
+  flutter_test: #untuk menulis dan menjalankan tes unit/widget 
     sdk: flutter
   provider: ^6.1.2
     

@@ -1,8 +1,13 @@
+import 'package:cafe_pinkeu/presentation/fitur/makanan/popup_cupcake/cupcake_candy.dart';
+import 'package:cafe_pinkeu/presentation/fitur/makanan/popup_cupcake/cupcake_choco_oreo.dart';
+import 'package:cafe_pinkeu/presentation/fitur/makanan/popup_cupcake/cupcake_ice_cream.dart';
+import 'package:cafe_pinkeu/presentation/fitur/makanan/popup_cupcake/cupcake_love.dart';
+import 'package:cafe_pinkeu/presentation/fitur/makanan/popup_cupcake/cupcake_rainbow.dart';
+import 'package:cafe_pinkeu/presentation/fitur/makanan/popup_cupcake/cupcake_unicorn.dart';
 import 'package:flutter/material.dart';
 import 'package:cafe_pinkeu/core/assets/assets.gen.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dart';
-import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
 
@@ -150,91 +155,104 @@ class _CupcakePageState extends State<CupcakePage> {
                 ),
                 itemCount: cupcakes.length,
                 itemBuilder: (context, index) {
-                  return Container(
-                    width: 134,
-                    height: 173,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFDE2E7),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(12),
-                            ),
-                            child: Container(
-                              width: 53,
-                              height: 69,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(cupcakes[index]['image']!),
+                  return GestureDetector(
+                    onTap: () {
+                      if (cupcakes[index]['name'] == 'Cupcake Rainbow') {
+                        CupcakeRainbowDetailPopup.show(
+                            context, cupcakes[index]);
+                      } else if (cupcakes[index]['name'] ==
+                          'Cupcake Ice Cream') {
+                        CupcakeIceCreamDetailPopup.show(
+                            context, cupcakes[index]);
+                      } else if (cupcakes[index]['name'] == 'Cupcake Candy') {
+                        CupcakeCandyDetailPopup.show(context, cupcakes[index]);
+                      } else if (cupcakes[index]['name'] == 'Cupcake Love') {
+                        CupcakeLoveDetailPopup.show(context, cupcakes[index]);
+                      } else if (cupcakes[index]['name'] == 'Cupcake Unicorn') {
+                        CupcakeUnicornDetailPopup.show(
+                            context, cupcakes[index]);
+                      } else if (cupcakes[index]['name'] ==
+                          'Cupcake Choco Oreo') {
+                        CupcakeChocoOreoDetailPopup.show(
+                            context, cupcakes[index]);
+                      }
+                    },
+                    child: Container(
+                      width: 134,
+                      height: 173,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFDE2E7),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(12),
+                              ),
+                              child: Container(
+                                width: 53,
+                                height: 69,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image:
+                                        AssetImage(cupcakes[index]['image']!),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    cupcakes[index]['price']!,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(
-                                        color: const Color(0xFFA85100),
-                                        width: 1.0,
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      cupcakes[index]['price']!,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                        fontSize: 10,
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                    ],
-                  ),
-                        ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              cupcakes[index]['name']!,
-                              style: const TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
+                                    const SizedBox(width: 10),
+                                  ],
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 4),
-                          ],
-                        ),
-                            ],
                           ),
-                        ),
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      cupcakes[index]['name']!,
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -262,13 +280,7 @@ class _CupcakePageState extends State<CupcakePage> {
                 MaterialPageRoute(builder: (context) => CartPage()),
               );
               break;
-            case 3: // Notifications
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => NotifikasiPage()),
-              );
-              break;
-            case 4: // Profile
+            case 3: // Profile
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ProfilePage()),
@@ -296,13 +308,6 @@ class _CupcakePageState extends State<CupcakePage> {
               color: Colors.black, // Ikon Cart berwarna hitam
             ),
             label: 'Keranjang',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.notifications,
-              color: Colors.black, // Ikon Notifications berwarna hitam
-            ),
-            label: 'Notifikasi',
           ),
           BottomNavigationBarItem(
             icon: Icon(

@@ -19,7 +19,7 @@ class CheckoutController extends GetxController {
   final selectedDelivery = Rx<Map<String, dynamic>?>(null);
 
   final Map<String, Timer> _statusTimers = {};
-
+  //proses checkout
   Future<void> processCheckout({
     required List<Map<String, dynamic>> items,
     required double total,
@@ -32,7 +32,8 @@ class CheckoutController extends GetxController {
       }
 
       final orderId = 'ORDER-${DateTime.now().millisecondsSinceEpoch}';
-      final expiryTime = DateTime.now().add(Duration(minutes: 5));
+      final expiryTime = DateTime.now()
+          .add(Duration(minutes: 1)); //waktu nya sama kek di serverjs
 
       final formattedItems = items
           .map((item) => {
@@ -63,7 +64,7 @@ class CheckoutController extends GetxController {
 
       // Create payment first
       final response = await http.post(
-        Uri.parse('http://10.180.85.120:3000/create-payment'),
+        Uri.parse('http://192.168.43.229:3000/create-payment'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'orderId': orderId,
@@ -191,7 +192,7 @@ class CheckoutController extends GetxController {
         }
 
         final response = await http.get(
-          Uri.parse('http://192.168.1.3:3000/status/$orderId'),
+          Uri.parse('http://192.168.43.229:3000/status/$orderId'),
         );
 
         if (response.statusCode == 200) {

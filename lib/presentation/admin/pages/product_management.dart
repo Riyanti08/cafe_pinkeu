@@ -64,7 +64,6 @@ class ProductManagementPage extends StatelessWidget {
       'category': 'Shortcake',
       'description': 'Sweet melon shortcake'
     },
-    // tambah lg di sini
 
     // Milkshakes
     {
@@ -81,7 +80,6 @@ class ProductManagementPage extends StatelessWidget {
       'category': 'Milkshake',
       'description': 'Refreshing mint milkshake'
     },
-    // tambah lg di sini
   ];
 
   ProductManagementPage({super.key});

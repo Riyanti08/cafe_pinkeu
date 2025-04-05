@@ -65,7 +65,7 @@ app.post("/create-payment", async (req, res) => {
         name: item.name,
       })),
       expiry: {
-        duration: 5,
+        duration: 1, //durasi paymmentnya
         unit: "minutes",
       },
       callbacks: {
@@ -75,7 +75,7 @@ app.post("/create-payment", async (req, res) => {
       },
     };
 
-    const transaction = await snap.createTransaction(parameter);
+    const transaction = await snap.createTransaction(parameter); //link pembayaran
     console.log("Payment URL created:", transaction.redirect_url);
 
     res.json({

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cafe_pinkeu/core/assets/assets.gen.dart';
-// ignore: unused_import
 import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dart';
-import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
 
@@ -210,32 +208,6 @@ class _CoffeeScreenState extends State<CoffeeScreen> {
                                         width: 1.0,
                                       ),
                                     ),
-                                    child: Row(
-                                      children: [
-                                        IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              if (coffee[index]['quantity'] > 1) {
-                                                coffee[index]['quantity']--;
-                                              }
-                                            });
-                                          },
-                                          icon: const Icon(Icons.remove, color: Colors.black, size: 10),
-                                        ),
-                                        Text(
-                                          coffee[index]['quantity'].toString(),
-                                          style: const TextStyle(fontSize: 10),
-                                        ),
-                                        IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              coffee[index]['quantity']++;
-                                            });
-                                          },
-                                          icon: const Icon(Icons.add, color: Colors.black, size: 10),
-                                        ),
-                                      ],
-                                    ),
                                   ),
                                 ],
                               ),
@@ -295,13 +267,7 @@ class _CoffeeScreenState extends State<CoffeeScreen> {
                 MaterialPageRoute(builder: (context) => CartPage()),
               );
               break;
-            case 3: // Notifications
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => NotifikasiPage()),
-              );
-              break;
-            case 4: // Profile
+            case 3: // Profile
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ProfilePage()),
@@ -329,13 +295,6 @@ class _CoffeeScreenState extends State<CoffeeScreen> {
               color: Colors.black, // Ikon Cart berwarna hitam
             ),
             label: 'Keranjang',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.notifications,
-              color: Colors.black, // Ikon Notifications berwarna hitam
-            ),
-            label: 'Notifikasi',
           ),
           BottomNavigationBarItem(
             icon: Icon(

@@ -1,9 +1,13 @@
+import 'package:cafe_pinkeu/presentation/fitur/makanan/poppup_shortcake/chocolate_roll.dart';
+import 'package:cafe_pinkeu/presentation/fitur/makanan/poppup_shortcake/chocolate_strawberry.dart';
+import 'package:cafe_pinkeu/presentation/fitur/makanan/poppup_shortcake/shortcake_mango.dart';
+import 'package:cafe_pinkeu/presentation/fitur/makanan/poppup_shortcake/shortcake_melon.dart';
+import 'package:cafe_pinkeu/presentation/fitur/makanan/poppup_shortcake/shortcake_strawberry.dart';
+import 'package:cafe_pinkeu/presentation/fitur/makanan/poppup_shortcake/strawberry_roll_cake.dart';
 import 'package:flutter/material.dart';
 import 'package:cafe_pinkeu/core/assets/assets.gen.dart';
-// ignore: unused_import
 import 'package:cafe_pinkeu/presentation/dashboard/pages/home/home_page.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/keranjang/keranjang.dart';
-import 'package:cafe_pinkeu/presentation/dashboard/pages/notifikasi/semua.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/profil/profile.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/pages/search/search.dart';
 
@@ -151,120 +155,119 @@ class _ShortcakeScreenState extends State<ShortcakeScreen> {
                 ),
                 itemCount: shortcake.length,
                 itemBuilder: (context, index) {
-                  return Container(
-                    width: 134,
-                    height: 173,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFDE2E7),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(12),
-                            ),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(shortcake[index]['image']!),
+                  return GestureDetector(
+                    onTap: () {
+                      if (shortcake[index]['name'] == 'Shortcake Strawberry') {
+                        ShortcakeStrawberryDetailPopup.show(
+                            context, shortcake[index]);
+                      } else if (shortcake[index]['name'] ==
+                          'Shortcake Melon') {
+                        ShortcakeMelonDetailPopup.show(
+                            context, shortcake[index]);
+                      } else if (shortcake[index]['name'] ==
+                          'Shortcake Manggo') {
+                        ShortcakeMangoDetailPopup.show(
+                            context, shortcake[index]);
+                      } else if (shortcake[index]['name'] ==
+                          'Shortcake Chocolate Roll') {
+                        ChocolateRollDetailPopup.show(
+                            context, shortcake[index]);
+                      } else if (shortcake[index]['name'] ==
+                          'Shortcake Strawberry Roll') {
+                        StrawberryRollCakeDetailPopup.show(
+                            context, shortcake[index]);
+                      } else if (shortcake[index]['name'] ==
+                          'Shortcake Chocolate Strawberry') {
+                        ChocolateStrawberryDetailPopup.show(
+                            context, shortcake[index]);
+                      }
+                    },
+                    child: Container(
+                      width: 134,
+                      height: 173,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFDE2E7),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(12),
+                              ),
+                              child: Container(
+                                width: 53,
+                                height: 69,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image:
+                                        AssetImage(shortcake[index]['image']!),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    shortcake[index]['price']!,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(
-                                        color: const Color(0xFFA85100),
-                                        width: 1.0,
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      shortcake[index]['price']!,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                        fontSize: 10,
                                       ),
                                     ),
-                                    child: Row(
-                                      children: [
-                                        IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              if (shortcake[index]['quantity'] > 1) {
-                                                shortcake[index]['quantity']--;
-                                              }
-                                            });
-                                          },
-                                          icon: const Icon(Icons.remove, color: Colors.black, size: 10),
+                                    const SizedBox(width: 10),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: const Color(0xFFA85100),
+                                          width: 1.0,
                                         ),
-                                        Text(
-                                          shortcake[index]['quantity'].toString(),
-                                          style: const TextStyle(fontSize: 10),
-                                        ),
-                                        IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              shortcake[index]['quantity']++;
-                                            });
-                                          },
-                                          icon: const Icon(Icons.add, color: Colors.black, size: 10),
-                                        ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    shortcake[index]['name']!,
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      shortcake[index]['name']!,
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  const Icon(
-                                    Icons.star_border,
-                                    size: 20,
-                                    color: Color(0xFFA85100),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -292,13 +295,7 @@ class _ShortcakeScreenState extends State<ShortcakeScreen> {
                 MaterialPageRoute(builder: (context) => CartPage()),
               );
               break;
-            case 3: // Notifications
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => NotifikasiPage()),
-              );
-              break;
-            case 4: // Profile
+            case 3: // Profile
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ProfilePage()),
@@ -326,13 +323,6 @@ class _ShortcakeScreenState extends State<ShortcakeScreen> {
               color: Colors.black, // Ikon Cart berwarna hitam
             ),
             label: 'Keranjang',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.notifications,
-              color: Colors.black, // Ikon Notifications berwarna hitam
-            ),
-            label: 'Notifikasi',
           ),
           BottomNavigationBarItem(
             icon: Icon(

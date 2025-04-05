@@ -8,7 +8,7 @@ import 'package:cafe_pinkeu/presentation/splash_screen.dart';
 import 'presentation/dashboard/bindings/init_bindings.dart';
 import 'core/core.dart';
 import 'package:cafe_pinkeu/presentation/dashboard/controller/checkout_controller.dart';
- 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
